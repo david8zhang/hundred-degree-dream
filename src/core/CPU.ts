@@ -1,11 +1,13 @@
-import { Constants } from '~/utils/Constants'
+import { Constants, Side } from '~/utils/Constants'
 import { PartyMember } from './PartyMember'
 import { Dungeon } from '~/scenes/Dungeon'
 import { EnemyMember } from './EnemyMember'
+import { MoveNames } from './moves/MoveNames'
 
 export class CPU {
   public enemies: EnemyMember[] = []
   private scene: Dungeon
+  private enemyToActIndex: number = 0
 
   constructor(scene: Dungeon) {
     this.scene = scene
@@ -24,12 +26,30 @@ export class CPU {
         },
         maxHealth: 10, // Should be based on enemy type config
         spriteTexture: 'temp-enemy',
-        moveNames: [],
+        moveNames: [MoveNames.ENEMY_CHARGE],
       })
       this.enemies.push(enemy)
       xPos += enemy.sprite.displayWidth + 20
     }
   }
 
-  onMoveCompleted() {}
+  startTurn() {
+    this.processEnemyAction()
+  }
+
+  processEnemyAction() {
+    const enemyToAct = this.enemies[this.enemyToActIndex]
+    const move = enemyToAct.getMoveToExecute()
+    move.execute()
+  }
+
+  onMoveCompleted() {
+    if (this.enemyToActIndex == this.enemies.length - 1) {
+      this.enemyToActIndex = 0
+      this.scene.startTurn(Side.PLAYER)
+    } else {
+      this.enemyToActIndex++
+      this.processEnemyAction()
+    }
+  }
 }

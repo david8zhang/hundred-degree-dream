@@ -1,4 +1,4 @@
-import { CharacterConfig, Constants } from '~/utils/Constants'
+import { CharacterConfig, Constants, Side } from '~/utils/Constants'
 import { PartyMember } from './PartyMember'
 import { Dungeon } from '~/scenes/Dungeon'
 import { TargetCursor } from './TargetCursor'
@@ -17,7 +17,7 @@ export interface PlayerConfig {
 
 export class Player {
   private scene: Dungeon
-  private party: PartyMember[] = []
+  public party: PartyMember[] = []
   private partyMemberToActIndex: number = 0
 
   // Actions (Fight, Tactics, Items)
@@ -80,16 +80,32 @@ export class Player {
     })
   }
 
-  onMoveCompleted() {}
+  onMoveCompleted() {
+    if (this.partyMemberToActIndex == this.party.length - 1) {
+      this.scene.startTurn(Side.CPU)
+    } else {
+      this.partyMemberToActIndex++
+      this.actionState = ActionState.PICK_ACTION
+      this.showActions()
+      this.highlightAction()
+    }
+  }
 
   startTurn() {
+    this.partyMemberToActIndex = 0
+    this.actionState = ActionState.PICK_ACTION
     this.showActions()
+    this.highlightAction()
+  }
+
+  highlightAction() {
     const selectedAction = this.actions[this.selectedActionIndex]
     selectedAction.setStroke('yellow', 2)
     selectedAction.setStyle({ color: 'yellow' })
   }
 
   showActions() {
+    console.log(this.partyMemberToActIndex)
     const partyMemberSprite = this.partyMemberToAct.sprite
     this.fightActionText
       .setPosition(

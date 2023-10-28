@@ -1,6 +1,7 @@
 import { Scene } from 'phaser'
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
+import { Dungeon } from '~/scenes/Dungeon'
 
 export enum TargetType {
   SINGLE = 'SINGLE',
@@ -20,14 +21,14 @@ export interface MovePayload {
 }
 
 export abstract class Move {
-  protected scene: Scene
+  protected scene: Dungeon
   protected onMoveCompleted!: Function
   public name!: string
   public targetType: TargetType
   public isExecuting: boolean = false
   public member!: PartyMember | EnemyMember
 
-  constructor(scene: Scene, config: MoveConfig) {
+  constructor(scene: Dungeon, config: MoveConfig) {
     this.scene = scene
     this.targetType = config.targetType
     this.onMoveCompleted = config.onMoveCompleted

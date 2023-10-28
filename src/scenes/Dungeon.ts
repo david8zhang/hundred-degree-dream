@@ -2,6 +2,7 @@ import { CPU } from '~/core/CPU'
 import { EnemyMember } from '~/core/EnemyMember'
 import { PartyMember } from '~/core/PartyMember'
 import { Player } from '~/core/Player'
+import { EnemyCharge } from '~/core/moves/EnemyCharge'
 import { Kick } from '~/core/moves/Kick'
 import { Move } from '~/core/moves/Move'
 import { MoveNames } from '~/core/moves/MoveNames'
@@ -11,7 +12,7 @@ import { Constants, Side } from '~/utils/Constants'
 export class Dungeon extends Phaser.Scene {
   public player!: Player
   public cpu!: CPU
-  public currTurn!: Side.PLAYER
+  public currTurn: Side = Side.PLAYER
   public updateCallbacks: Function[] = []
 
   constructor() {
@@ -25,6 +26,15 @@ export class Dungeon extends Phaser.Scene {
     this.cpu = new CPU(this)
     this.cpu.generateEnemies()
     this.player.startTurn()
+  }
+
+  startTurn(side: Side) {
+    this.currTurn = side
+    if (side == Side.PLAYER) {
+      this.player.startTurn()
+    } else {
+      this.cpu.startTurn()
+    }
   }
 
   public convertMoveNamesToMoves(moveNames: MoveNames[], member: PartyMember | EnemyMember) {
@@ -41,6 +51,10 @@ export class Dungeon extends Phaser.Scene {
           moveMapping[moveName] = new Punch(this, member)
           break
         }
+        case MoveNames.ENEMY_CHARGE: {
+          moveMapping[moveName] = new EnemyCharge(this, member)
+          break
+        }
       }
     })
     return moveMapping
@@ -50,6 +64,10 @@ export class Dungeon extends Phaser.Scene {
     return this.cpu.enemies
   }
 
+  getPlayerParty() {
+    return this.player.party
+  }
+
   update(): void {
     this.updateCallbacks.forEach((updateFn) => {
       updateFn()
@@ -57,7 +75,10 @@ export class Dungeon extends Phaser.Scene {
   }
 
   onMoveCompleted() {
-    this.player.onMoveCompleted()
-    this.cpu.onMoveCompleted()
+    if (this.currTurn == Side.PLAYER) {
+      this.player.onMoveCompleted()
+    } else {
+      this.cpu.onMoveCompleted()
+    }
   }
 }

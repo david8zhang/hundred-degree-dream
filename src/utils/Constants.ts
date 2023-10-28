@@ -14,6 +14,7 @@ export interface CharacterConfig {
 export class Constants {
   public static WINDOW_WIDTH = 1000
   public static WINDOW_HEIGHT = 800
+  public static MOVE_SPEED = 300
 
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2
@@ -27,7 +28,7 @@ export class Constants {
     {
       maxHealth: 10,
       spriteTexture: 'temp-ally',
-      moveNames: [],
+      moveNames: [MoveNames.PUNCH],
     },
   ]
 }

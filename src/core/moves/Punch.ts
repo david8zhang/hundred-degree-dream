@@ -128,9 +128,16 @@ export class Punch extends Move {
     const enemyToTarget = targets[0]
     this.cachedInitialXPos = this.member.sprite.x
     this.isExecuting = true
+    const distance = Phaser.Math.Distance.Between(
+      this.member.sprite.x,
+      this.member.sprite.y,
+      enemyToTarget.sprite.x,
+      enemyToTarget.sprite.y
+    )
+
     const tweenToTarget = this.scene.tweens.add({
       targets: [this.member.sprite],
-      duration: 1000,
+      duration: (distance / Constants.MOVE_SPEED) * 1000,
       x: {
         from: this.member.sprite.x,
         to: enemyToTarget.sprite.x - enemyToTarget.sprite.displayWidth / 2 - 20,

@@ -30,4 +30,10 @@ export class EnemyMember {
       .setFlipX(true)
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.moveNames, this)
   }
+
+  getMoveToExecute() {
+    const keys = Object.keys(this.moveMapping)
+    const randomKey = Phaser.Utils.Array.GetRandom(keys)
+    return this.moveMapping[randomKey]
+  }
 }
