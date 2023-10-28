@@ -1,11 +1,13 @@
 import Phaser from 'phaser'
 
-import Game from './scenes/Game'
+import Overworld from './scenes/Overworld'
+import { Dungeon } from './scenes/Dungeon'
+import { Preload } from './scenes/Preload'
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 1000,
+  height: 800,
   parent: 'phaser',
   physics: {
     default: 'arcade',
@@ -19,10 +21,9 @@ const config: Phaser.Types.Core.GameConfig = {
   },
   pixelArt: true,
   scale: {
-    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Game],
+  scene: [Preload, Overworld, Dungeon],
 }
 
 export default new Phaser.Game(config)
