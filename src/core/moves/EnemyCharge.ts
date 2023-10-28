@@ -7,6 +7,8 @@ import { Constants } from '~/utils/Constants'
 import { UINumber } from '../UINumber'
 
 export class EnemyCharge extends Move {
+  public static DAMAGE = 10
+
   constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
     super(scene, {
       name: MoveNames.ENEMY_CHARGE,
@@ -46,13 +48,14 @@ export class EnemyCharge extends Move {
       targets: [this.member.sprite],
       x: {
         from: this.member.sprite.x,
-        to: partyMemberToTarget.sprite.x,
+        to: partyMemberToTarget.sprite.x + partyMemberToTarget.sprite.displayWidth / 2 + 15,
       },
       duration: (distance / Constants.MOVE_SPEED) * 1000,
       onComplete: () => {
         tweenToTarget.remove()
+        partyMemberToTarget.takeDamage(EnemyCharge.DAMAGE)
         UINumber.createNumber(
-          'Damage!',
+          `-${EnemyCharge.DAMAGE}`,
           this.scene,
           partyMemberToTarget.sprite.x,
           partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,

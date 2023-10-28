@@ -19,6 +19,7 @@ export class Player {
   private scene: Dungeon
   public party: PartyMember[] = []
   private partyMemberToActIndex: number = 0
+  private healthGroup: Phaser.GameObjects.Group
 
   // Actions (Fight, Tactics, Items)
   private fightActionText!: Phaser.GameObjects.Text
@@ -38,9 +39,43 @@ export class Player {
     this.scene = scene
     this.movesMenu = this.scene.add.group()
     this.targetCursor = new TargetCursor(this.scene)
+    this.healthGroup = this.scene.add.group()
     this.setupPartyMembers(config.characterConfigs)
     this.setupActions()
     this.setupKeyListener()
+    this.setupHealth()
+  }
+
+  setupHealth() {
+    let yPos = 45
+    this.party.forEach((partyMember: PartyMember) => {
+      const partyMemberIcon = this.scene.add
+        .sprite(30, yPos, partyMember.sprite.texture.key)
+        .setScale(0.5)
+        .setOrigin(0, 0.5)
+      const healthText = this.scene.add
+        .text(
+          partyMemberIcon.x + partyMemberIcon.displayWidth + 15,
+          yPos,
+          `${partyMember.currHealth}/${partyMember.maxHealth}`,
+          {
+            fontSize: '25px',
+            color: 'white',
+          }
+        )
+        .setOrigin(0, 0.5)
+        .setData('ref', partyMember)
+      yPos += healthText.displayHeight + 30
+      this.healthGroup.add(healthText)
+    })
+  }
+
+  updateHealth() {
+    this.healthGroup.children.entries.forEach((obj) => {
+      const text = obj as Phaser.GameObjects.Text
+      const partyMember = text.getData('ref') as PartyMember
+      text.setText(`${partyMember.currHealth}/${partyMember.maxHealth}`)
+    })
   }
 
   setupActions() {
@@ -61,7 +96,7 @@ export class Player {
   }
 
   get partyMemberToAct() {
-    return this.party[this.partyMemberToActIndex]
+    return this.livingParty[this.partyMemberToActIndex]
   }
 
   setupPartyMembers(characterConfigs: CharacterConfig[]) {
@@ -74,14 +109,19 @@ export class Player {
           x: xPos,
           y: yPos,
         },
+        player: this,
       })
       this.party.push(partyMember)
       xPos -= partyMember.sprite.displayWidth + 100
     })
   }
 
+  get livingParty() {
+    return this.party.filter((p) => p.currHealth > 0)
+  }
+
   onMoveCompleted() {
-    if (this.partyMemberToActIndex == this.party.length - 1) {
+    if (this.partyMemberToActIndex == this.livingParty.length - 1) {
       this.scene.startTurn(Side.CPU)
     } else {
       this.partyMemberToActIndex++
@@ -105,7 +145,6 @@ export class Player {
   }
 
   showActions() {
-    console.log(this.partyMemberToActIndex)
     const partyMemberSprite = this.partyMemberToAct.sprite
     this.fightActionText
       .setPosition(

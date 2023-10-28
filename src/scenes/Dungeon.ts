@@ -60,12 +60,26 @@ export class Dungeon extends Phaser.Scene {
     return moveMapping
   }
 
+  isRoundOver() {
+    return this.getPlayerParty().length == 0 || this.getEnemies().length == 0
+  }
+
+  handleRoundOver() {
+    if (this.getPlayerParty().length == 0) {
+      this.scene.start('overworld')
+    } else {
+      this.handleWaveComplete()
+    }
+  }
+
+  handleWaveComplete() {}
+
   getEnemies() {
-    return this.cpu.enemies
+    return this.cpu.livingEnemies
   }
 
   getPlayerParty() {
-    return this.player.party
+    return this.player.livingParty
   }
 
   update(): void {

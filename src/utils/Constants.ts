@@ -6,6 +6,7 @@ export enum Side {
 }
 
 export interface CharacterConfig {
+  name: string
   maxHealth: number
   spriteTexture: string
   moveNames: MoveNames[]
@@ -21,11 +22,13 @@ export class Constants {
 
   public static PARTY_MEMBER_CONFIGS = [
     {
+      name: 'player',
       maxHealth: 10,
       spriteTexture: 'temp-player',
       moveNames: [MoveNames.PUNCH, MoveNames.KICK],
     },
     {
+      name: 'ally',
       maxHealth: 10,
       spriteTexture: 'temp-ally',
       moveNames: [MoveNames.PUNCH],

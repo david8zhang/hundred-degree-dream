@@ -33,14 +33,22 @@ export class CPU {
     }
   }
 
+  get livingEnemies() {
+    return this.enemies.filter((e) => e.currHealth > 0)
+  }
+
   startTurn() {
     this.processEnemyAction()
   }
 
   processEnemyAction() {
-    const enemyToAct = this.enemies[this.enemyToActIndex]
-    const move = enemyToAct.getMoveToExecute()
-    move.execute()
+    if (!this.scene.isRoundOver()) {
+      const enemyToAct = this.enemies[this.enemyToActIndex]
+      const move = enemyToAct.getMoveToExecute()
+      move.execute()
+    } else {
+      this.scene.handleRoundOver()
+    }
   }
 
   onMoveCompleted() {
