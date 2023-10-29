@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { Constants } from '~/utils/Constants'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export default class Overworld extends Phaser.Scene {
   private goToSleepText!: Phaser.GameObjects.Text
@@ -8,7 +9,15 @@ export default class Overworld extends Phaser.Scene {
     super('overworld')
   }
 
+  initializeSaveState() {
+    if (Save.getData(SaveKeys.CURR_EXP) == undefined) {
+      Save.setData(SaveKeys.CURR_EXP, 0)
+      Save.setData(SaveKeys.CURR_LEVEL, 0)
+    }
+  }
+
   create() {
+    this.initializeSaveState()
     this.goToSleepText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'Go to sleep!', {
         fontSize: '25px',

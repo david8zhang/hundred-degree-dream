@@ -9,6 +9,8 @@ export enum ActionState {
   PICK_MOVE = 'PICK_MOVE',
   SELECT_TARGET = 'SELECT_TARGET',
   EXECUTING_MOVE = 'EXECUTING_MOVE',
+  PARRYING = 'PARRYING',
+  WAITING_FOR_TURN = 'WAITING_FOR_TURN',
 }
 
 export interface PlayerConfig {
@@ -26,7 +28,7 @@ export class Player {
   private tacticsActionText!: Phaser.GameObjects.Text
   private actions: Phaser.GameObjects.Text[] = []
   private selectedActionIndex: number = 0
-  private actionState: ActionState = ActionState.PICK_ACTION
+  public actionState: ActionState = ActionState.PICK_ACTION
 
   // Moves (Attacks)
   private movesMenu!: Phaser.GameObjects.Group
@@ -34,6 +36,11 @@ export class Player {
 
   // Targeting cursors
   private targetCursor: TargetCursor
+
+  // Parries
+  public isParrying: boolean = false
+  private parryCooldown: boolean = false
+  private parryCooldownTimerEvent: Phaser.Time.TimerEvent | null = null
 
   constructor(scene: Dungeon, config: PlayerConfig) {
     this.scene = scene
@@ -123,6 +130,7 @@ export class Player {
   onMoveCompleted() {
     if (!this.scene.isRoundOver()) {
       if (this.partyMemberToActIndex == this.livingParty.length - 1) {
+        this.actionState = ActionState.WAITING_FOR_TURN
         this.scene.startTurn(Side.CPU)
       } else {
         this.partyMemberToActIndex++
@@ -319,6 +327,32 @@ export class Player {
     }
   }
 
+  handleKeyPressForParry(keyCode: number) {
+    switch (keyCode) {
+      case Phaser.Input.Keyboard.KeyCodes.R: {
+        if (!this.parryCooldown) {
+          this.parryCooldown = true
+          this.isParrying = true
+          this.party[0].sprite.setTint(0x0000ff)
+          this.scene.time.delayedCall(150, () => {
+            this.party[0].sprite.clearTint()
+            this.isParrying = false
+          })
+          this.parryCooldownTimerEvent = this.scene.time.delayedCall(500, () => {
+            this.parryCooldown = false
+          })
+        }
+      }
+    }
+  }
+
+  resetParryState() {
+    this.parryCooldown = false
+    if (this.parryCooldownTimerEvent) {
+      this.parryCooldownTimerEvent.destroy()
+    }
+  }
+
   setupKeyListener() {
     this.scene.input.keyboard.on('keydown', (e) => {
       switch (this.actionState) {
@@ -332,6 +366,10 @@ export class Player {
         }
         case ActionState.SELECT_TARGET: {
           this.handleKeyPressForSelectTarget(e.keyCode)
+          break
+        }
+        case ActionState.PARRYING: {
+          this.handleKeyPressForParry(e.keyCode)
           break
         }
       }

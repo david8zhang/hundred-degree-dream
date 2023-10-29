@@ -19,6 +19,7 @@ export class Punch extends Move {
   private canEndMinigame: boolean = false
   private cachedInitialXPos: number = -1
   private enemyToTarget: EnemyMember | null = null
+  private windUpTween: Phaser.Tweens.Tween | null = null
 
   private static TIMING_TO_DAMAGE_MAP = {
     [TimingType.OK]: 1,
@@ -55,6 +56,16 @@ export class Punch extends Move {
 
   startCircleSequence() {
     const allCircles = this.circleGroup.children.entries
+    this.windUpTween = this.scene.add.tween({
+      targets: [this.member.sprite],
+      x: '-=75',
+      duration: 1000,
+      onComplete: () => {
+        this.windUpTween!.remove()
+        this.windUpTween = null
+      },
+    })
+
     this.scene.time.addEvent({
       repeat: 2,
       delay: 500,
@@ -64,8 +75,8 @@ export class Punch extends Move {
         if (this.highlightedCircleIndex < allCircles.length - 1) {
           circle.setFillStyle(0xff0000)
         } else {
-          this.timingType = TimingType.GREAT
           circle.setFillStyle(0x00ff00)
+          this.timingType = TimingType.GREAT
         }
         this.highlightedCircleIndex++
       },
@@ -74,32 +85,49 @@ export class Punch extends Move {
 
   handleRelease() {
     this.circleGroup.setVisible(false)
-    const damage = Punch.TIMING_TO_DAMAGE_MAP[this.timingType]
-    this.enemyToTarget!.takeDamage(damage)
-    UINumber.createNumber(
-      `${this.timingType}`,
-      this.scene,
-      this.enemyToTarget!.sprite.x,
-      this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
-      'white',
-      '30px',
-      () => {
-        // Have player return to original position
-        const tweenBack = this.scene.tweens.add({
-          targets: [this.member.sprite],
-          x: {
-            from: this.member.sprite.x,
-            to: this.cachedInitialXPos,
-          },
-          duration: 1000,
-          onComplete: () => {
-            tweenBack.remove()
-            this.resetMoveState()
-            this.onMoveCompleted()
-          },
-        })
-      }
-    )
+    const timingType = this.timingType
+    const damage = Punch.TIMING_TO_DAMAGE_MAP[timingType]
+    if (this.windUpTween) {
+      this.windUpTween.stop()
+      this.windUpTween.remove()
+      this.windUpTween = null
+    }
+    const attackTween = this.scene.add.tween({
+      targets: [this.member.sprite],
+      x: {
+        from: this.member.sprite.x,
+        to: this.enemyToTarget!.sprite.x - this.enemyToTarget!.sprite.displayWidth / 2 - 20,
+      },
+      duration: 100,
+      onComplete: () => {
+        attackTween.remove()
+        this.enemyToTarget!.takeDamage(damage)
+        UINumber.createNumber(
+          `${timingType}`,
+          this.scene,
+          this.enemyToTarget!.sprite.x,
+          this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
+          'white',
+          '30px',
+          () => {
+            // Have player return to original position
+            const tweenBack = this.scene.tweens.add({
+              targets: [this.member.sprite],
+              x: {
+                from: this.member.sprite.x,
+                to: this.cachedInitialXPos,
+              },
+              duration: 1000,
+              onComplete: () => {
+                tweenBack.remove()
+                this.resetMoveState()
+                this.onMoveCompleted()
+              },
+            })
+          }
+        )
+      },
+    })
   }
 
   resetMoveState() {

@@ -5,6 +5,7 @@ import { PartyMember } from '../PartyMember'
 import { MoveNames } from './MoveNames'
 import { Constants } from '~/utils/Constants'
 import { UINumber } from '../UINumber'
+import { ActionState } from '../Player'
 
 export class EnemyCharge extends Move {
   public static DAMAGE = 1
@@ -43,6 +44,7 @@ export class EnemyCharge extends Move {
       this.member.sprite.y
     )
     const cachedXPos = this.member.sprite.x
+    this.scene.player.actionState = ActionState.PARRYING
 
     const tweenToTarget = this.scene.tweens.add({
       targets: [this.member.sprite],
@@ -53,33 +55,73 @@ export class EnemyCharge extends Move {
       duration: (distance / Constants.MOVE_SPEED) * 1000,
       onComplete: () => {
         tweenToTarget.remove()
-        const damage = Math.round(
-          Constants.getWaveHPAndDmgMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE
-        )
-        partyMemberToTarget.takeDamage(damage)
-        UINumber.createNumber(
-          `-${damage}`,
-          this.scene,
-          partyMemberToTarget.sprite.x,
-          partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-          'white',
-          '30px',
-          () => {
-            const tweenBack = this.scene.tweens.add({
+
+        // Wind up enemy attack
+        const windUpTween = this.scene.tweens.add({
+          targets: [this.member.sprite],
+          x: '+=50',
+          duration: 500,
+          onComplete: () => {
+            windUpTween.remove()
+            this.scene.tweens.add({
               targets: [this.member.sprite],
-              x: {
-                from: this.member.sprite.x,
-                to: cachedXPos,
-              },
-              duration: 1000,
+              x: '-=50',
+              duration: 75,
               onComplete: () => {
-                tweenBack.remove()
-                this.onMoveCompleted()
+                // Successful parry!
+                if (this.scene.player.isParrying) {
+                  UINumber.createNumber(
+                    'Great!',
+                    this.scene,
+                    partyMemberToTarget.sprite.x,
+                    partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
+                    'white',
+                    '30px',
+                    () => {
+                      this.tweenBack(cachedXPos)
+                    }
+                  )
+                } else {
+                  this.dealDamage(partyMemberToTarget, cachedXPos)
+                }
               },
             })
-          }
-        )
+          },
+        })
       },
     })
+  }
+
+  tweenBack(cachedXPos: number) {
+    const tweenBack = this.scene.tweens.add({
+      targets: [this.member.sprite],
+      x: {
+        from: this.member.sprite.x,
+        to: cachedXPos,
+      },
+      duration: 1000,
+      onComplete: () => {
+        tweenBack.remove()
+        this.onMoveCompleted()
+      },
+    })
+  }
+
+  dealDamage(partyMemberToTarget: PartyMember, cachedXPos: number) {
+    const damage = Math.round(
+      Constants.getWaveHPAndDmgMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE
+    )
+    partyMemberToTarget.takeDamage(damage)
+    UINumber.createNumber(
+      `-${damage}`,
+      this.scene,
+      partyMemberToTarget.sprite.x,
+      partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
+      'white',
+      '30px',
+      () => {
+        this.tweenBack(cachedXPos)
+      }
+    )
   }
 }

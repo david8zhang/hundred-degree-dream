@@ -1,6 +1,14 @@
+import { Save } from '~/utils/Save'
+
 export class Preload extends Phaser.Scene {
   constructor() {
     super('preload')
+    new Save()
+    window.addEventListener('keydown', (e) => {
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) > -1) {
+        e.preventDefault()
+      }
+    })
   }
 
   preload() {
@@ -17,10 +25,6 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
-    // this.scene.start('dungeon')
-    this.scene.start('dream-end', {
-      enemiesDefeated: [],
-      wavesCompleted: 1,
-    })
+    this.scene.start('overworld')
   }
 }

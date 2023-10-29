@@ -78,12 +78,12 @@ export class Dungeon extends Phaser.Scene {
 
   handleRoundOver() {
     if (this.getPlayerParty().length == 0) {
-      this.waveNumber = 0
       const dreamEndPayload: DreamEndPayload = {
         enemiesDefeated: this.enemiesDefeated,
         wavesCompleted: this.waveNumber - 1,
       }
       this.scene.start('dream-end', dreamEndPayload)
+      this.waveNumber = 0
     } else {
       this.handleWaveComplete()
     }
