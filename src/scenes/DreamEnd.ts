@@ -2,10 +2,16 @@ import { Button } from '~/core/Button'
 import { UIValueBar } from '~/core/UIValueBar'
 import { Constants } from '~/utils/Constants'
 import { EnemyConfig } from '~/utils/EnemyConfigs'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export interface DreamEndPayload {
   enemiesDefeated: EnemyConfig[]
   wavesCompleted: number
+}
+
+export enum DreamEndState {
+  STATS = 'STATS',
+  EXP_GAIN = 'EXP_GAIN',
 }
 
 export class DreamEnd extends Phaser.Scene {
@@ -14,10 +20,17 @@ export class DreamEnd extends Phaser.Scene {
   private expEarnedValue!: Phaser.GameObjects.Text
   private wavesCompletedText!: Phaser.GameObjects.Text
   private wavesCompletedValue!: Phaser.GameObjects.Text
-  private totalExpText!: Phaser.GameObjects.Text
+
+  // EXP stats
   private expBar!: UIValueBar
+  private totalExpText!: Phaser.GameObjects.Text
+  private currLevelText!: Phaser.GameObjects.Text
+  private nextLevelText!: Phaser.GameObjects.Text
+
   private continueButton!: Button
   private hasInitializedText: boolean = false
+  private currState = DreamEndState.STATS
+  private totalExpGained: number = 0
 
   constructor() {
     super('dream-end')
@@ -55,18 +68,170 @@ export class DreamEnd extends Phaser.Scene {
         color: 'white',
       })
       .setOrigin(1, 0.5)
+    this.expBar = new UIValueBar(this, {
+      width: 400,
+      height: 30,
+      x: Constants.WINDOW_WIDTH / 2 - 200,
+      y: Constants.WINDOW_HEIGHT / 2 - 15,
+      maxValue: 100,
+      showBorder: true,
+      borderWidth: 1,
+      bgColor: 0x666666,
+      changeColorBasedOnPct: false,
+      hideBg: false,
+    })
+    this.expBar.setVisible(false)
+    this.currLevelText = this.add
+      .text(Constants.WINDOW_WIDTH / 2 - this.expBar.width / 2 - 30, this.expBar.y + 15, '', {
+        fontSize: '25px',
+        color: 'white',
+      })
+      .setOrigin(1, 0.5)
+    this.nextLevelText = this.add
+      .text(Constants.WINDOW_WIDTH / 2 + this.expBar.width / 2 + 30, this.expBar.y + 15, '', {
+        fontSize: '25px',
+        color: 'white',
+      })
+      .setOrigin(0, 0.5)
   }
 
   init(data: DreamEndPayload) {
-    if (!this.hasInitializedText) {
-      this.initializeText()
-      this.hasInitializedText = true
-    }
-    const totalEXPEarned = data.enemiesDefeated.reduce((acc, curr) => {
+    this.initializeText()
+    this.totalExpGained = data.enemiesDefeated.reduce((acc, curr) => {
       return acc + curr.baseExpReward
     }, 0)
-    this.expEarnedValue.setText(`${totalEXPEarned}`)
+    this.expEarnedValue.setText(`${this.totalExpGained}`)
     this.wavesCompletedValue.setText(`${data.wavesCompleted}`)
+  }
+
+  hideEndOfRoundStats() {
+    this.wavesCompletedText.setVisible(false)
+    this.wavesCompletedValue.setVisible(false)
+    this.titleText.setVisible(false)
+    this.expEarnedText.setVisible(false)
+    this.expEarnedValue.setVisible(false)
+  }
+
+  displayExpGainStats() {
+    this.currState = DreamEndState.EXP_GAIN
+    const currExpLevel = Save.getData(SaveKeys.CURR_EXP)
+    let currLevel = Save.getData(SaveKeys.CURR_LEVEL)
+    this.continueButton.setVisible(false)
+
+    this.expBar.setCurrValue(currExpLevel)
+    this.expBar.setVisible(true)
+    this.currLevelText.setText(`Lv. ${currLevel}`).setVisible(true)
+    this.nextLevelText.setText(`Lv. ${currLevel + 1}`).setVisible(true)
+
+    this.totalExpGained = 120
+    const didLevelUp = currExpLevel + this.totalExpGained > 100
+    const newLevel = currLevel + Math.floor((currExpLevel + this.totalExpGained) / 100)
+
+    const expGainPerInc = 1
+    const numRepeats = this.totalExpGained / expGainPerInc
+    this.time.addEvent({
+      delay: 25,
+      startAt: 10,
+      repeat: numRepeats - 1,
+      callback: () => {
+        this.expBar.setCurrValue(this.expBar.currValue + expGainPerInc)
+        if (this.expBar.currValue >= 100) {
+          currLevel++
+          this.expBar.currValue = this.expBar.currValue - 100
+          this.currLevelText.setText(`Lv. ${currLevel}`)
+          this.nextLevelText.setText(`Lv. ${currLevel + 1}`)
+        }
+      },
+    })
+    if (didLevelUp) {
+      this.time.addEvent({
+        delay: numRepeats * 25 + 1000,
+        callback: () => {
+          this.expBar.setVisible(false)
+          this.currLevelText.setVisible(false)
+          this.nextLevelText.setVisible(false)
+          const levelUpText = this.add
+            .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'Level Up!', {
+              fontSize: '40px',
+              color: 'white',
+            })
+            .setOrigin(0.5, 1)
+            .setAlpha(0)
+          const newLevelText = this.add
+            .text(
+              Constants.WINDOW_WIDTH / 2,
+              levelUpText.y + levelUpText.displayHeight + 30,
+              `Lv. ${newLevel}`,
+              {
+                fontSize: '50px',
+                color: 'white',
+              }
+            )
+            .setOrigin(0.5, 1)
+            .setAlpha(0)
+          this.tweens.add({
+            targets: [levelUpText, newLevelText],
+            alpha: {
+              from: 0,
+              to: 1,
+            },
+            duration: 500,
+            onComplete: () => {
+              this.tweens.add({
+                targets: [levelUpText, newLevelText],
+                delay: 1000,
+                duration: 500,
+                y: '-=150',
+                ease: Phaser.Math.Easing.Sine.InOut,
+                onComplete: () => {
+                  this.continueButton.setVisible(true)
+                  const healthBonusText = this.add
+                    .text(
+                      Constants.WINDOW_WIDTH / 3,
+                      newLevelText.y + newLevelText.displayHeight + 20,
+                      'Health',
+                      {
+                        fontSize: '30px',
+                        color: 'white',
+                      }
+                    )
+                    .setOrigin(0, 0.5)
+                  const healthBonusValue = this.add
+                    .text(Constants.WINDOW_WIDTH * (2 / 3), healthBonusText.y, '+5', {
+                      fontSize: '30px',
+                      color: 'white',
+                    })
+                    .setOrigin(1, 0.5)
+
+                  const damageBonusText = this.add
+                    .text(
+                      Constants.WINDOW_WIDTH / 3,
+                      healthBonusText.y + healthBonusText.displayHeight + 20,
+                      'Damage',
+                      {
+                        fontSize: '30px',
+                        color: 'white',
+                      }
+                    )
+                    .setOrigin(0, 0.5)
+                  const damageBonusValue = this.add
+                    .text(Constants.WINDOW_WIDTH * (2 / 3), damageBonusText.y, '+25%', {
+                      fontSize: '30px',
+                      color: 'white',
+                    })
+                    .setOrigin(1, 0.5)
+                },
+              })
+            },
+          })
+        },
+      })
+    }
+  }
+
+  resetStatPage() {
+    this.currState = DreamEndState.STATS
+    this.scene.start('overworld')
   }
 
   create() {
@@ -76,13 +241,18 @@ export class DreamEnd extends Phaser.Scene {
       height: 45,
       text: 'Continue',
       onClick: () => {
-        this.scene.start('overworld')
+        if (this.currState == DreamEndState.STATS) {
+          this.hideEndOfRoundStats()
+          this.displayExpGainStats()
+        } else {
+          this.resetStatPage()
+        }
       },
       strokeWidth: 0,
       fontSize: '20px',
       backgroundColor: 0xffffff,
       x: Constants.WINDOW_WIDTH / 2,
-      y: this.wavesCompletedText.y + this.wavesCompletedText.displayHeight + 40,
+      y: Constants.WINDOW_HEIGHT * 0.75,
     })
   }
 }

@@ -8,7 +8,7 @@ import { UINumber } from '../UINumber'
 import { ActionState } from '../Player'
 
 export class EnemyCharge extends Move {
-  public static DAMAGE = 1
+  public static DAMAGE = 4
 
   constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
     super(scene, {
@@ -109,7 +109,7 @@ export class EnemyCharge extends Move {
 
   dealDamage(partyMemberToTarget: PartyMember, cachedXPos: number) {
     const damage = Math.round(
-      Constants.getWaveHPAndDmgMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE
+      Constants.getWaveMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE
     )
     partyMemberToTarget.takeDamage(damage)
     UINumber.createNumber(

@@ -1,7 +1,8 @@
 import { Constants, Side } from '~/utils/Constants'
 import { Dungeon } from '~/scenes/Dungeon'
 import { EnemyMember } from './EnemyMember'
-import { ALL_ENEMY_CONFIGS } from '~/utils/EnemyConfigs'
+import { ALL_ENEMY_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export class CPU {
   public enemies: EnemyMember[] = []
@@ -23,6 +24,7 @@ export class CPU {
 
     for (let i = 0; i < numEnemies; i++) {
       const randomConfig = Phaser.Utils.Array.GetRandom(ALL_ENEMY_CONFIGS)
+      const expReward = this.getExpReward(randomConfig)
       const enemy = new EnemyMember(this.scene, {
         position: {
           x: xPos,
@@ -31,13 +33,22 @@ export class CPU {
         enemyConfig: {
           ...randomConfig,
           maxHealth: Math.round(
-            Constants.getWaveHPAndDmgMultiplier(this.scene.waveNumber) * randomConfig.maxHealth
+            Constants.getWaveMultiplier(this.scene.waveNumber) * randomConfig.maxHealth
           ),
+          baseExpReward: expReward,
         },
       })
       this.enemies.push(enemy)
       xPos += 100
     }
+  }
+
+  getExpReward(randomConfig: EnemyConfig) {
+    const expWithWaveMultiplier = Math.round(
+      Constants.getWaveMultiplier(this.scene.waveNumber) * randomConfig.baseExpReward
+    )
+    const currLevel = Save.getData(SaveKeys.CURR_LEVEL)
+    return Constants.scaleExpGainedFromLevel(expWithWaveMultiplier, currLevel)
   }
 
   get livingEnemies() {

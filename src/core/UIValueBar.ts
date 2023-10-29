@@ -11,7 +11,7 @@ interface UIValueBarConfig {
   showBorder?: boolean
   isVertical?: boolean
   depth?: number
-  hideBg: boolean
+  hideBg?: boolean
   changeColorBasedOnPct: boolean
 }
 

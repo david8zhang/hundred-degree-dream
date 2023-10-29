@@ -31,9 +31,13 @@ export class Constants {
     },
   ]
 
-  public static getWaveHPAndDmgMultiplier(waveNumber: number) {
+  public static getWaveMultiplier(waveNumber: number) {
     return (
       1 + Math.floor(waveNumber / Constants.NUM_WAVES_PER_INC) * Constants.MULTIPLIER_INC_AMOUNT
     )
+  }
+
+  public static scaleExpGainedFromLevel(exp: number, level: number) {
+    return Math.round(exp / Math.round(Math.log2(level)))
   }
 }

@@ -12,7 +12,7 @@ export default class Overworld extends Phaser.Scene {
   initializeSaveState() {
     if (Save.getData(SaveKeys.CURR_EXP) == undefined) {
       Save.setData(SaveKeys.CURR_EXP, 0)
-      Save.setData(SaveKeys.CURR_LEVEL, 0)
+      Save.setData(SaveKeys.CURR_LEVEL, 1)
     }
   }
 
@@ -33,7 +33,11 @@ export default class Overworld extends Phaser.Scene {
         this.goToSleepText.setColor('white')
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
-        this.scene.start('dungeon')
+        // this.scene.start('dungeon')
+        this.scene.start('dream-end', {
+          enemiesDefeated: [],
+          wavesCompleted: 0,
+        })
       })
     this.goToSleepText.setPosition(
       Constants.WINDOW_WIDTH / 2 - this.goToSleepText.displayWidth / 2,
