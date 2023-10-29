@@ -18,6 +18,12 @@ export class Punch extends Move {
   private canStartMinigame: boolean = false
   private canEndMinigame: boolean = false
   private cachedInitialXPos: number = -1
+  private enemyToTarget: EnemyMember | null = null
+
+  private static TIMING_TO_DAMAGE_MAP = {
+    [TimingType.OK]: 1,
+    [TimingType.GREAT]: 2,
+  }
 
   constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
     super(scene, {
@@ -68,16 +74,16 @@ export class Punch extends Move {
 
   handleRelease() {
     this.circleGroup.setVisible(false)
+    const damage = Punch.TIMING_TO_DAMAGE_MAP[this.timingType]
+    this.enemyToTarget!.takeDamage(damage)
     UINumber.createNumber(
       `${this.timingType}`,
       this.scene,
-      this.member.sprite.x,
-      this.member.sprite.y - this.member.sprite.displayHeight / 2,
+      this.enemyToTarget!.sprite.x,
+      this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
       'white',
       '30px',
       () => {
-        // TODO: Handle damage here
-
         // Have player return to original position
         const tweenBack = this.scene.tweens.add({
           targets: [this.member.sprite],
@@ -102,6 +108,7 @@ export class Punch extends Move {
     this.canStartMinigame = false
     this.canEndMinigame = false
     this.cachedInitialXPos = -1
+    this.enemyToTarget = null
   }
 
   showCircles() {
@@ -125,14 +132,14 @@ export class Punch extends Move {
 
   public execute(movePayload: MovePayload): void {
     const targets = movePayload.targets
-    const enemyToTarget = targets[0]
+    this.enemyToTarget = targets[0] as EnemyMember
     this.cachedInitialXPos = this.member.sprite.x
     this.isExecuting = true
     const distance = Phaser.Math.Distance.Between(
       this.member.sprite.x,
       this.member.sprite.y,
-      enemyToTarget.sprite.x,
-      enemyToTarget.sprite.y
+      this.enemyToTarget.sprite.x,
+      this.enemyToTarget.sprite.y
     )
 
     const tweenToTarget = this.scene.tweens.add({
@@ -140,7 +147,7 @@ export class Punch extends Move {
       duration: (distance / Constants.MOVE_SPEED) * 1000,
       x: {
         from: this.member.sprite.x,
-        to: enemyToTarget.sprite.x - enemyToTarget.sprite.displayWidth / 2 - 20,
+        to: this.enemyToTarget.sprite.x - this.enemyToTarget.sprite.displayWidth / 2 - 20,
       },
       onComplete: () => {
         tweenToTarget.remove()

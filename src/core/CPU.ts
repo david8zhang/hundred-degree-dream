@@ -1,8 +1,7 @@
 import { Constants, Side } from '~/utils/Constants'
-import { PartyMember } from './PartyMember'
 import { Dungeon } from '~/scenes/Dungeon'
 import { EnemyMember } from './EnemyMember'
-import { MoveNames } from './moves/MoveNames'
+import { ALL_ENEMY_CONFIGS } from '~/utils/EnemyConfigs'
 
 export class CPU {
   public enemies: EnemyMember[] = []
@@ -14,22 +13,30 @@ export class CPU {
   }
 
   generateEnemies() {
+    if (this.enemies.length > 0) {
+      this.enemies.forEach((e) => e.destroy())
+      this.enemies = []
+    }
     let xPos = Constants.LEFTMOST_CPU_X_POS
     const yPos = 400
-    const numEnemies = 3
+    const numEnemies = Phaser.Math.Between(1, 3)
 
     for (let i = 0; i < numEnemies; i++) {
+      const randomConfig = Phaser.Utils.Array.GetRandom(ALL_ENEMY_CONFIGS)
       const enemy = new EnemyMember(this.scene, {
         position: {
           x: xPos,
           y: yPos,
         },
-        maxHealth: 10, // Should be based on enemy type config
-        spriteTexture: 'temp-enemy',
-        moveNames: [MoveNames.ENEMY_CHARGE],
+        enemyConfig: {
+          ...randomConfig,
+          maxHealth: Math.round(
+            Constants.getWaveHPAndDmgMultiplier(this.scene.waveNumber) * randomConfig.maxHealth
+          ),
+        },
       })
       this.enemies.push(enemy)
-      xPos += enemy.sprite.displayWidth + 20
+      xPos += 100
     }
   }
 
@@ -38,26 +45,26 @@ export class CPU {
   }
 
   startTurn() {
+    this.enemyToActIndex = 0
     this.processEnemyAction()
   }
 
   processEnemyAction() {
-    if (!this.scene.isRoundOver()) {
-      const enemyToAct = this.enemies[this.enemyToActIndex]
-      const move = enemyToAct.getMoveToExecute()
-      move.execute()
-    } else {
-      this.scene.handleRoundOver()
-    }
+    const enemyToAct = this.livingEnemies[this.enemyToActIndex]
+    const move = enemyToAct.getMoveToExecute()
+    move.execute()
   }
 
   onMoveCompleted() {
-    if (this.enemyToActIndex == this.enemies.length - 1) {
-      this.enemyToActIndex = 0
-      this.scene.startTurn(Side.PLAYER)
+    if (!this.scene.isRoundOver()) {
+      if (this.enemyToActIndex == this.livingEnemies.length - 1) {
+        this.scene.startTurn(Side.PLAYER)
+      } else {
+        this.enemyToActIndex++
+        this.processEnemyAction()
+      }
     } else {
-      this.enemyToActIndex++
-      this.processEnemyAction()
+      this.scene.handleRoundOver()
     }
   }
 }

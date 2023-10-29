@@ -121,13 +121,17 @@ export class Player {
   }
 
   onMoveCompleted() {
-    if (this.partyMemberToActIndex == this.livingParty.length - 1) {
-      this.scene.startTurn(Side.CPU)
+    if (!this.scene.isRoundOver()) {
+      if (this.partyMemberToActIndex == this.livingParty.length - 1) {
+        this.scene.startTurn(Side.CPU)
+      } else {
+        this.partyMemberToActIndex++
+        this.actionState = ActionState.PICK_ACTION
+        this.showActions()
+        this.highlightAction()
+      }
     } else {
-      this.partyMemberToActIndex++
-      this.actionState = ActionState.PICK_ACTION
-      this.showActions()
-      this.highlightAction()
+      this.scene.handleRoundOver()
     }
   }
 
@@ -309,6 +313,7 @@ export class Player {
         const selectedMove = moveList[this.selectedMoveIndex].getData('ref') as Move
         selectedMove.execute({ targets: this.targetCursor.getSelectedTargets() })
         this.targetCursor.setVisible(false)
+        this.targetCursor.reset()
         break
       }
     }

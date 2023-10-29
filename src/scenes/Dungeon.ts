@@ -8,12 +8,17 @@ import { Move } from '~/core/moves/Move'
 import { MoveNames } from '~/core/moves/MoveNames'
 import { Punch } from '~/core/moves/Punch'
 import { Constants, Side } from '~/utils/Constants'
+import { DreamEndPayload } from './DreamEnd'
+import { EnemyConfig } from '~/utils/EnemyConfigs'
 
 export class Dungeon extends Phaser.Scene {
   public player!: Player
   public cpu!: CPU
   public currTurn: Side = Side.PLAYER
   public updateCallbacks: Function[] = []
+  public waveNumber: number = 1
+  public waveCompleteText!: Phaser.GameObjects.Text
+  public enemiesDefeated: EnemyConfig[] = []
 
   constructor() {
     super('dungeon')
@@ -26,6 +31,13 @@ export class Dungeon extends Phaser.Scene {
     this.cpu = new CPU(this)
     this.cpu.generateEnemies()
     this.player.startTurn()
+    this.waveCompleteText = this.add
+      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT * 0.25, 'Wave Complete!', {
+        fontSize: '40px',
+        color: 'white',
+      })
+      .setOrigin(0.5, 1)
+    this.waveCompleteText.setVisible(false)
   }
 
   startTurn(side: Side) {
@@ -66,13 +78,41 @@ export class Dungeon extends Phaser.Scene {
 
   handleRoundOver() {
     if (this.getPlayerParty().length == 0) {
-      this.scene.start('overworld')
+      this.waveNumber = 0
+      const dreamEndPayload: DreamEndPayload = {
+        enemiesDefeated: this.enemiesDefeated,
+        wavesCompleted: this.waveNumber - 1,
+      }
+      this.scene.start('dream-end', dreamEndPayload)
     } else {
       this.handleWaveComplete()
     }
   }
 
-  handleWaveComplete() {}
+  handleWaveComplete() {
+    this.cpu.enemies.forEach((enemy) => {
+      enemy.sprite.setVisible(false)
+    })
+    this.waveCompleteText.setText(`Wave ${this.waveNumber} Complete!`)
+    this.waveCompleteText.setAlpha(0)
+    this.waveCompleteText.setVisible(true)
+    this.tweens.add({
+      targets: [this.waveCompleteText],
+      alpha: {
+        from: 0,
+        to: 1,
+      },
+      ease: Phaser.Math.Easing.Sine.In,
+      duration: 500,
+      hold: 2000,
+      yoyo: true,
+      onComplete: () => {
+        this.waveNumber++
+        this.cpu.generateEnemies()
+        this.startTurn(Side.PLAYER)
+      },
+    })
+  }
 
   getEnemies() {
     return this.cpu.livingEnemies

@@ -16,6 +16,8 @@ export class Constants {
   public static WINDOW_WIDTH = 1000
   public static WINDOW_HEIGHT = 800
   public static MOVE_SPEED = 300
+  public static MULTIPLIER_INC_AMOUNT = 0.25
+  public static NUM_WAVES_PER_INC = 4
 
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2
@@ -25,13 +27,13 @@ export class Constants {
       name: 'player',
       maxHealth: 10,
       spriteTexture: 'temp-player',
-      moveNames: [MoveNames.PUNCH, MoveNames.KICK],
-    },
-    {
-      name: 'ally',
-      maxHealth: 10,
-      spriteTexture: 'temp-ally',
       moveNames: [MoveNames.PUNCH],
     },
   ]
+
+  public static getWaveHPAndDmgMultiplier(waveNumber: number) {
+    return (
+      1 + Math.floor(waveNumber / Constants.NUM_WAVES_PER_INC) * Constants.MULTIPLIER_INC_AMOUNT
+    )
+  }
 }

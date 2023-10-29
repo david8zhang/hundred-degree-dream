@@ -28,7 +28,7 @@ export class TargetCursor {
       const singleTargetCursor = this.cursorGroup.getFirst(true)
       singleTargetCursor.setPosition(
         newEnemyToTarget.sprite.x,
-        newEnemyToTarget.sprite.y + newEnemyToTarget.sprite.displayHeight / 2 + 30
+        newEnemyToTarget.sprite.y - newEnemyToTarget.sprite.displayHeight / 2 - 30
       )
     }
   }
@@ -43,7 +43,7 @@ export class TargetCursor {
         const newCursor = this.scene.add
           .sprite(
             enemyToTarget.sprite.x,
-            enemyToTarget.sprite.y + enemyToTarget.sprite.displayHeight / 2 + 30,
+            enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30,
             'cursor'
           )
           .setDisplaySize(32, 32)
@@ -55,7 +55,7 @@ export class TargetCursor {
           const newCursor = this.scene.add
             .sprite(
               enemyToTarget.sprite.x,
-              enemyToTarget.sprite.y + enemyToTarget.sprite.displayHeight / 2 + 30,
+              enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30,
               'cursor'
             )
             .setDisplaySize(32, 32)
@@ -75,6 +75,10 @@ export class TargetCursor {
       default:
         return enemyList
     }
+  }
+
+  reset() {
+    this.enemyToTargetIndex = 0
   }
 
   setVisible(isVisible: boolean) {
