@@ -1,15 +1,15 @@
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { TargetType } from './moves/Move'
 
 export class TargetCursor {
-  private scene: Dungeon
+  private scene: Dream
   public cursorGroup!: Phaser.GameObjects.Group
   private targetType!: TargetType
 
   // Single target only
   public enemyToTargetIndex = 0
 
-  constructor(scene: Dungeon) {
+  constructor(scene: Dream) {
     this.scene = scene
     this.cursorGroup = this.scene.add.group()
   }

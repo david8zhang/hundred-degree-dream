@@ -1,6 +1,6 @@
 import { CharacterConfig, Constants, Side } from '~/utils/Constants'
 import { PartyMember } from './PartyMember'
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { TargetCursor } from './TargetCursor'
 import { Move, TargetType } from './moves/Move'
 
@@ -18,7 +18,7 @@ export interface PlayerConfig {
 }
 
 export class Player {
-  private scene: Dungeon
+  private scene: Dream
   public party: PartyMember[] = []
   private partyMemberToActIndex: number = 0
   private healthGroup: Phaser.GameObjects.Group
@@ -42,7 +42,7 @@ export class Player {
   private parryCooldown: boolean = false
   private parryCooldownTimerEvent: Phaser.Time.TimerEvent | null = null
 
-  constructor(scene: Dungeon, config: PlayerConfig) {
+  constructor(scene: Dream, config: PlayerConfig) {
     this.scene = scene
     this.movesMenu = this.scene.add.group()
     this.targetCursor = new TargetCursor(this.scene)
@@ -67,7 +67,7 @@ export class Player {
           `${partyMember.currHealth}/${partyMember.maxHealth}`,
           {
             fontSize: '25px',
-            color: 'white',
+            color: 'black',
           }
         )
         .setOrigin(0, 0.5)
@@ -89,13 +89,13 @@ export class Player {
     this.fightActionText = this.scene.add
       .text(0, 0, 'Fight', {
         fontSize: '25px',
-        color: 'white',
+        color: 'black',
       })
       .setVisible(false)
     this.tacticsActionText = this.scene.add
       .text(0, 0, 'Tactics', {
         fontSize: '25px',
-        color: 'white',
+        color: 'black',
       })
       .setVisible(false)
     this.actions.push(this.fightActionText)
@@ -152,8 +152,8 @@ export class Player {
 
   highlightAction() {
     const selectedAction = this.actions[this.selectedActionIndex]
-    selectedAction.setStroke('yellow', 2)
-    selectedAction.setStyle({ color: 'yellow' })
+    selectedAction.setStroke('green', 2)
+    selectedAction.setStyle({ color: 'green' })
   }
 
   showActions() {
@@ -174,8 +174,8 @@ export class Player {
 
   scrollActions(scrollAmt: number) {
     const previousAction = this.actions[this.selectedActionIndex]
-    previousAction.setStroke('white', 0)
-    previousAction.setStyle({ color: 'white' })
+    previousAction.setStroke('black', 0)
+    previousAction.setStyle({ color: 'black' })
 
     this.selectedActionIndex += scrollAmt
     if (this.selectedActionIndex == -1) {
@@ -185,8 +185,8 @@ export class Player {
       this.selectedActionIndex = 0
     }
     const newAction = this.actions[this.selectedActionIndex]
-    newAction.setStroke('yellow', 2)
-    newAction.setStyle({ color: 'yellow' })
+    newAction.setStroke('green', 2)
+    newAction.setStyle({ color: 'green' })
   }
 
   displayMovesMenu() {
@@ -200,7 +200,7 @@ export class Player {
         name,
         {
           fontSize: '25px',
-          color: 'white',
+          color: 'black',
         }
       )
       moveNameText.setData('ref', this.partyMemberToAct.moveMapping[name])
@@ -217,8 +217,8 @@ export class Player {
   highlightSelectedMove() {
     const moveList = this.movesMenu.children.entries
     const selectedMoveText = moveList[this.selectedMoveIndex] as Phaser.GameObjects.Text
-    selectedMoveText.setStroke('yellow', 2)
-    selectedMoveText.setColor('yellow')
+    selectedMoveText.setStroke('green', 2)
+    selectedMoveText.setColor('green')
   }
 
   scrollMove(scrollAmount: number) {
@@ -226,8 +226,8 @@ export class Player {
 
     // Dehighlight previous move text
     const selectedMoveText = moveList[this.selectedMoveIndex] as Phaser.GameObjects.Text
-    selectedMoveText.setStroke('white', 1)
-    selectedMoveText.setColor('white')
+    selectedMoveText.setStroke('black', 1)
+    selectedMoveText.setColor('black')
 
     this.selectedMoveIndex += scrollAmount
     if (this.selectedMoveIndex == -1) {

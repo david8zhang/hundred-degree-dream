@@ -1,15 +1,15 @@
 import { Constants, Side } from '~/utils/Constants'
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { EnemyMember } from './EnemyMember'
 import { ALL_ENEMY_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
 import { Save, SaveKeys } from '~/utils/Save'
 
 export class CPU {
   public enemies: EnemyMember[] = []
-  private scene: Dungeon
+  private scene: Dream
   private enemyToActIndex: number = 0
 
-  constructor(scene: Dungeon) {
+  constructor(scene: Dream) {
     this.scene = scene
   }
 

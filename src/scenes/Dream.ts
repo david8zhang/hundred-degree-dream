@@ -12,7 +12,7 @@ import { EnemyConfig } from '~/utils/EnemyConfigs'
 import { Stomp } from '~/core/moves/Stomp'
 import { Save, SaveKeys } from '~/utils/Save'
 
-export class Dungeon extends Phaser.Scene {
+export class Dream extends Phaser.Scene {
   public player!: Player
   public cpu!: CPU
   public currTurn: Side = Side.PLAYER
@@ -22,7 +22,7 @@ export class Dungeon extends Phaser.Scene {
   public enemiesDefeated: EnemyConfig[] = []
 
   constructor() {
-    super('dungeon')
+    super('dream')
   }
 
   applyLevelMultipliers(party: CharacterConfig[]) {
@@ -38,6 +38,9 @@ export class Dungeon extends Phaser.Scene {
   }
 
   create() {
+    this.add
+      .image(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'background')
+      .setOrigin(0.5, 0.5)
     const characterConfigs = this.applyLevelMultipliers(Constants.PARTY_MEMBER_CONFIGS)
     this.player = new Player(this, {
       characterConfigs,
@@ -48,7 +51,7 @@ export class Dungeon extends Phaser.Scene {
     this.waveCompleteText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT * 0.25, 'Wave Complete!', {
         fontSize: '40px',
-        color: 'white',
+        color: 'black',
       })
       .setOrigin(0.5, 1)
     this.waveCompleteText.setVisible(false)

@@ -1,4 +1,4 @@
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { Move, MovePayload, TargetType } from './Move'
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
@@ -11,7 +11,7 @@ export class Stomp extends Move {
   private isPressingKey: boolean = false
   private static DAMAGE = 1
 
-  constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
+  constructor(scene: Dream, member: PartyMember | EnemyMember) {
     super(scene, {
       name: MoveNames.STOMP,
       onMoveCompleted: () => scene.onMoveCompleted(),
@@ -127,7 +127,7 @@ export class Stomp extends Move {
             this.scene,
             stompedEnemy.sprite.x,
             stompedEnemy.sprite.y - stompedEnemy.sprite.displayHeight - 30,
-            'white',
+            'black',
             '30px'
           )
         }

@@ -15,6 +15,7 @@ export class Preload extends Phaser.Scene {
     this.load.image('temp-player', 'temp-player.png')
     this.load.image('temp-ally', 'temp-ally.png')
     this.load.image('cursor', 'cursor.png')
+    this.load.image('background', 'background.png')
 
     // Enemies
     this.load.image('barnacle', 'enemies/barnacle.png')

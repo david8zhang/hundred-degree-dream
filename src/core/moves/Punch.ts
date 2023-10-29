@@ -1,5 +1,5 @@
 import { Move, MovePayload, TargetType } from './Move'
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { MoveNames } from './MoveNames'
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
@@ -26,7 +26,7 @@ export class Punch extends Move {
     [TimingType.GREAT]: 2,
   }
 
-  constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
+  constructor(scene: Dream, member: PartyMember | EnemyMember) {
     super(scene, {
       name: MoveNames.PUNCH,
       onMoveCompleted: () => scene.onMoveCompleted(),
@@ -109,7 +109,7 @@ export class Punch extends Move {
           this.scene,
           this.enemyToTarget!.sprite.x,
           this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
-          'white',
+          'black',
           '30px',
           () => {
             // Have player return to original position

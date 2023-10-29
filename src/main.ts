@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 import Overworld from './scenes/Overworld'
-import { Dungeon } from './scenes/Dungeon'
+import { Dream } from './scenes/Dream'
 import { Preload } from './scenes/Preload'
 import { DreamEnd } from './scenes/DreamEnd'
 
@@ -24,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Preload, Overworld, Dungeon, DreamEnd],
+  scene: [Preload, Overworld, Dream, DreamEnd],
 }
 
 export default new Phaser.Game(config)

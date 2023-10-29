@@ -1,6 +1,6 @@
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 
 export enum TargetType {
   SINGLE = 'SINGLE',
@@ -22,14 +22,14 @@ export interface MovePayload {
 }
 
 export abstract class Move {
-  protected scene: Dungeon
+  protected scene: Dream
   protected onMoveCompleted!: Function
   public name!: string
   public targetType: TargetType
   public isExecuting: boolean = false
   public member!: PartyMember | EnemyMember
 
-  constructor(scene: Dungeon, config: MoveConfig) {
+  constructor(scene: Dream, config: MoveConfig) {
     this.scene = scene
     this.targetType = config.targetType
     this.onMoveCompleted = config.onMoveCompleted

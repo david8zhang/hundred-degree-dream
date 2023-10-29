@@ -1,4 +1,4 @@
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { Move } from './moves/Move'
 import { MoveNames } from './moves/MoveNames'
 import { Player } from './Player'
@@ -16,7 +16,7 @@ export interface PartyMemberConfig {
 }
 
 export class PartyMember {
-  private scene: Dungeon
+  private scene: Dream
   private player: Player
   public currHealth: number
   public maxHealth: number
@@ -25,7 +25,7 @@ export class PartyMember {
     [key: string]: Move
   }
 
-  constructor(scene: Dungeon, config: PartyMemberConfig) {
+  constructor(scene: Dream, config: PartyMemberConfig) {
     this.scene = scene
     this.currHealth = config.maxHealth
     this.maxHealth = config.maxHealth

@@ -1,4 +1,4 @@
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { Move, MovePayload, TargetType } from './Move'
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
@@ -10,7 +10,7 @@ import { ActionState } from '../Player'
 export class EnemyCharge extends Move {
   public static DAMAGE = 1
 
-  constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
+  constructor(scene: Dream, member: PartyMember | EnemyMember) {
     super(scene, {
       name: MoveNames.ENEMY_CHARGE,
       onMoveCompleted: () => scene.onMoveCompleted(),
@@ -75,7 +75,7 @@ export class EnemyCharge extends Move {
                     this.scene,
                     partyMemberToTarget.sprite.x,
                     partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-                    'white',
+                    'black',
                     '30px',
                     () => {
                       this.tweenBack(cachedXPos)
@@ -117,7 +117,7 @@ export class EnemyCharge extends Move {
       this.scene,
       partyMemberToTarget.sprite.x,
       partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-      'white',
+      'black',
       '30px',
       () => {
         this.tweenBack(cachedXPos)

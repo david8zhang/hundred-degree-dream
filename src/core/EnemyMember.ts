@@ -1,4 +1,4 @@
-import { Dungeon } from '~/scenes/Dungeon'
+import { Dream } from '~/scenes/Dream'
 import { Move } from './moves/Move'
 import { UIValueBar } from './UIValueBar'
 import { UINumber } from './UINumber'
@@ -13,7 +13,7 @@ export interface EnemyMemberConfig {
 }
 
 export class EnemyMember {
-  private scene: Dungeon
+  private scene: Dream
   public currHealth: number
   public maxHealth: number
   public sprite: Phaser.GameObjects.Sprite
@@ -24,7 +24,7 @@ export class EnemyMember {
   private healthText: Phaser.GameObjects.Text
   private enemyConfig: EnemyConfig
 
-  constructor(scene: Dungeon, config: EnemyMemberConfig) {
+  constructor(scene: Dream, config: EnemyMemberConfig) {
     this.scene = scene
     this.enemyConfig = config.enemyConfig
     this.currHealth = config.enemyConfig.maxHealth
@@ -49,7 +49,7 @@ export class EnemyMember {
     this.healthText = this.scene.add
       .text(this.sprite.x, this.healthbar.y + 35, `${this.currHealth}`, {
         fontSize: '20px',
-        color: 'white',
+        color: 'black',
       })
       .setOrigin(0.5, 1)
   }
@@ -85,7 +85,7 @@ export class EnemyMember {
       this.scene,
       this.sprite.x,
       this.sprite.y - this.sprite.displayHeight / 2,
-      'white',
+      'black',
       '30px'
     )
   }
