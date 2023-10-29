@@ -39,7 +39,7 @@ export class CPU {
         },
       })
       this.enemies.push(enemy)
-      xPos += 100
+      xPos += 125
     }
   }
 

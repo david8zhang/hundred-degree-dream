@@ -32,6 +32,8 @@ export class Punch extends Move {
       onMoveCompleted: () => scene.onMoveCompleted(),
       targetType: TargetType.SINGLE,
       member,
+      description: 'Slug a single enemy in the face',
+      instructions: 'Hold the "F" key until the green circle lights up',
     })
     this.circleGroup = this.scene.add.group()
     this.setupCircles()
@@ -86,7 +88,7 @@ export class Punch extends Move {
   handleRelease() {
     this.circleGroup.setVisible(false)
     const timingType = this.timingType
-    const damage = Punch.TIMING_TO_DAMAGE_MAP[timingType]
+    const damage = this.scene.calculateDamageBasedOnLevel(Punch.TIMING_TO_DAMAGE_MAP[timingType])
     if (this.windUpTween) {
       this.windUpTween.stop()
       this.windUpTween.remove()

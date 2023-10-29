@@ -1,4 +1,3 @@
-import { Scene } from 'phaser'
 import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
 import { Dungeon } from '~/scenes/Dungeon'
@@ -14,6 +13,8 @@ export interface MoveConfig {
   onMoveCompleted: Function
   targetType: TargetType
   member: PartyMember | EnemyMember
+  description?: string
+  instructions?: string
 }
 
 export interface MovePayload {

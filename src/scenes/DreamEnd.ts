@@ -23,12 +23,10 @@ export class DreamEnd extends Phaser.Scene {
 
   // EXP stats
   private expBar!: UIValueBar
-  private totalExpText!: Phaser.GameObjects.Text
   private currLevelText!: Phaser.GameObjects.Text
   private nextLevelText!: Phaser.GameObjects.Text
 
   private continueButton!: Button
-  private hasInitializedText: boolean = false
   private currState = DreamEndState.STATS
   private totalExpGained: number = 0
 
@@ -122,8 +120,6 @@ export class DreamEnd extends Phaser.Scene {
     this.expBar.setVisible(true)
     this.currLevelText.setText(`Lv. ${currLevel}`).setVisible(true)
     this.nextLevelText.setText(`Lv. ${currLevel + 1}`).setVisible(true)
-
-    this.totalExpGained = 120
     const didLevelUp = currExpLevel + this.totalExpGained > 100
     const newLevel = currLevel + Math.floor((currExpLevel + this.totalExpGained) / 100)
 
@@ -184,7 +180,6 @@ export class DreamEnd extends Phaser.Scene {
                 y: '-=150',
                 ease: Phaser.Math.Easing.Sine.InOut,
                 onComplete: () => {
-                  this.continueButton.setVisible(true)
                   const healthBonusText = this.add
                     .text(
                       Constants.WINDOW_WIDTH / 3,
@@ -196,7 +191,7 @@ export class DreamEnd extends Phaser.Scene {
                       }
                     )
                     .setOrigin(0, 0.5)
-                  const healthBonusValue = this.add
+                  this.add
                     .text(Constants.WINDOW_WIDTH * (2 / 3), healthBonusText.y, '+5', {
                       fontSize: '30px',
                       color: 'white',
@@ -214,12 +209,14 @@ export class DreamEnd extends Phaser.Scene {
                       }
                     )
                     .setOrigin(0, 0.5)
-                  const damageBonusValue = this.add
+                  this.add
                     .text(Constants.WINDOW_WIDTH * (2 / 3), damageBonusText.y, '+25%', {
                       fontSize: '30px',
                       color: 'white',
                     })
                     .setOrigin(1, 0.5)
+                  this.applyExpGain(newLevel)
+                  this.continueButton.setVisible(true)
                 },
               })
             },
@@ -229,9 +226,9 @@ export class DreamEnd extends Phaser.Scene {
     }
   }
 
-  resetStatPage() {
-    this.currState = DreamEndState.STATS
-    this.scene.start('overworld')
+  applyExpGain(newLevel: number) {
+    Save.setData(SaveKeys.CURR_LEVEL, newLevel)
+    Save.setData(SaveKeys.CURR_EXP, this.totalExpGained % 100)
   }
 
   create() {
@@ -245,7 +242,8 @@ export class DreamEnd extends Phaser.Scene {
           this.hideEndOfRoundStats()
           this.displayExpGainStats()
         } else {
-          this.resetStatPage()
+          this.currState = DreamEndState.STATS
+          this.scene.start('overworld')
         }
       },
       strokeWidth: 0,

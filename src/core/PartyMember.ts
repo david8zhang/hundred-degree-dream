@@ -20,7 +20,7 @@ export class PartyMember {
   private player: Player
   public currHealth: number
   public maxHealth: number
-  public sprite: Phaser.GameObjects.Sprite
+  public sprite: Phaser.Physics.Arcade.Sprite
   public moveMapping: {
     [key: string]: Move
   }
@@ -30,7 +30,11 @@ export class PartyMember {
     this.currHealth = config.maxHealth
     this.maxHealth = config.maxHealth
     this.player = config.player
-    this.sprite = this.scene.add.sprite(config.position.x, config.position.y, config.spriteTexture)
+    this.sprite = this.scene.physics.add.sprite(
+      config.position.x,
+      config.position.y,
+      config.spriteTexture
+    )
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.moveNames, this)
   }
 

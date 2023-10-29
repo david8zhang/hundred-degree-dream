@@ -8,7 +8,7 @@ import { UINumber } from '../UINumber'
 import { ActionState } from '../Player'
 
 export class EnemyCharge extends Move {
-  public static DAMAGE = 4
+  public static DAMAGE = 1
 
   constructor(scene: Dungeon, member: PartyMember | EnemyMember) {
     super(scene, {
@@ -50,7 +50,7 @@ export class EnemyCharge extends Move {
       targets: [this.member.sprite],
       x: {
         from: this.member.sprite.x,
-        to: partyMemberToTarget.sprite.x + partyMemberToTarget.sprite.displayWidth / 2 + 15,
+        to: partyMemberToTarget.sprite.x + partyMemberToTarget.sprite.displayWidth / 2 + 30,
       },
       duration: (distance / Constants.MOVE_SPEED) * 1000,
       onComplete: () => {
@@ -65,7 +65,7 @@ export class EnemyCharge extends Move {
             windUpTween.remove()
             this.scene.tweens.add({
               targets: [this.member.sprite],
-              x: '-=50',
+              x: '-=75',
               duration: 75,
               onComplete: () => {
                 // Successful parry!

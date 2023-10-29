@@ -25,9 +25,6 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('dream-end', {
-      enemiesDefeated: [],
-      wavesCompleted: 0,
-    })
+    this.scene.start('overworld')
   }
 }

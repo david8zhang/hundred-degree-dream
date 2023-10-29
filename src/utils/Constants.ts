@@ -27,7 +27,7 @@ export class Constants {
       name: 'player',
       maxHealth: 10,
       spriteTexture: 'temp-player',
-      moveNames: [MoveNames.PUNCH],
+      moveNames: [MoveNames.PUNCH, MoveNames.STOMP],
     },
   ]
 
@@ -39,5 +39,16 @@ export class Constants {
 
   public static scaleExpGainedFromLevel(exp: number, level: number) {
     return Math.round(exp / Math.round(Math.log2(level)))
+  }
+
+  public static createArc(
+    sprite: Phaser.Physics.Arcade.Sprite,
+    landingPosition: { x: number; y: number },
+    duration: number
+  ) {
+    const xVelocity = (landingPosition.x - sprite.x) / duration
+    const yVelocity = (landingPosition.y - sprite.y - 490 * Math.pow(duration, 2)) / duration
+    sprite.setVelocity(xVelocity, yVelocity)
+    sprite.setGravityY(980)
   }
 }

@@ -33,11 +33,7 @@ export default class Overworld extends Phaser.Scene {
         this.goToSleepText.setColor('white')
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
-        // this.scene.start('dungeon')
-        this.scene.start('dream-end', {
-          enemiesDefeated: [],
-          wavesCompleted: 0,
-        })
+        this.scene.start('dungeon')
       })
     this.goToSleepText.setPosition(
       Constants.WINDOW_WIDTH / 2 - this.goToSleepText.displayWidth / 2,

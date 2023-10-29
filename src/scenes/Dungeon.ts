@@ -3,13 +3,14 @@ import { EnemyMember } from '~/core/EnemyMember'
 import { PartyMember } from '~/core/PartyMember'
 import { Player } from '~/core/Player'
 import { EnemyCharge } from '~/core/moves/EnemyCharge'
-import { Kick } from '~/core/moves/Kick'
 import { Move } from '~/core/moves/Move'
 import { MoveNames } from '~/core/moves/MoveNames'
 import { Punch } from '~/core/moves/Punch'
-import { Constants, Side } from '~/utils/Constants'
+import { CharacterConfig, Constants, Side } from '~/utils/Constants'
 import { DreamEndPayload } from './DreamEnd'
 import { EnemyConfig } from '~/utils/EnemyConfigs'
+import { Stomp } from '~/core/moves/Stomp'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export class Dungeon extends Phaser.Scene {
   public player!: Player
@@ -24,9 +25,22 @@ export class Dungeon extends Phaser.Scene {
     super('dungeon')
   }
 
+  applyLevelMultipliers(party: CharacterConfig[]) {
+    const level = Save.getData(SaveKeys.CURR_LEVEL)
+    return party.map((p) => {
+      return { ...p, maxHealth: p.maxHealth + (level - 1) * 5 }
+    })
+  }
+
+  calculateDamageBasedOnLevel(damage: number) {
+    const level = Save.getData(SaveKeys.CURR_LEVEL)
+    return Math.round(damage + (level - 1) * 0.25)
+  }
+
   create() {
+    const characterConfigs = this.applyLevelMultipliers(Constants.PARTY_MEMBER_CONFIGS)
     this.player = new Player(this, {
-      characterConfigs: Constants.PARTY_MEMBER_CONFIGS,
+      characterConfigs,
     })
     this.cpu = new CPU(this)
     this.cpu.generateEnemies()
@@ -55,16 +69,16 @@ export class Dungeon extends Phaser.Scene {
     } = {}
     moveNames.forEach((moveName: MoveNames) => {
       switch (moveName) {
-        case MoveNames.KICK: {
-          moveMapping[moveName] = new Kick(this, member)
-          break
-        }
         case MoveNames.PUNCH: {
           moveMapping[moveName] = new Punch(this, member)
           break
         }
         case MoveNames.ENEMY_CHARGE: {
           moveMapping[moveName] = new EnemyCharge(this, member)
+          break
+        }
+        case MoveNames.STOMP: {
+          moveMapping[moveName] = new Stomp(this, member)
           break
         }
       }
@@ -83,6 +97,7 @@ export class Dungeon extends Phaser.Scene {
         wavesCompleted: Math.max(0, this.waveNumber - 1),
       }
       this.scene.start('dream-end', dreamEndPayload)
+      this.enemiesDefeated = []
       this.waveNumber = 0
     } else {
       this.handleWaveComplete()
