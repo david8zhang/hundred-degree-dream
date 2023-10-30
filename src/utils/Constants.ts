@@ -28,31 +28,48 @@ export class Constants {
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2
 
-  public static PARTY_MEMBER_CONFIGS = [
-    {
-      name: 'player',
+  public static CHARACTER_CONFIGS = {
+    Jambo: {
+      name: 'Jambo',
       maxHealth: 10,
-      spriteTexture: 'temp-player',
+      spriteTexture: 'jambo',
       moveNames: [MoveNames.PUNCH, MoveNames.STOMP],
     },
-  ]
+    Chef: {
+      name: 'Chef',
+      maxHealth: 10,
+      spriteTexture: 'chef',
+      moveNames: [MoveNames.PUNCH, MoveNames.LET_HIM_COOK],
+    },
+    Athlete: {
+      name: 'Athlete',
+      maxHealth: 10,
+      spriteTexture: 'athlete',
+      moveNames: [MoveNames.PUNCH],
+    },
+    Tiger: {
+      name: 'Tiger',
+      maxHealth: 10,
+      spriteTexture: 'tiger',
+      moveNames: [MoveNames.PUNCH],
+    },
+  }
 
   public static SPORTS_CHANNEL_TEXT = [
-    `*It's the basketball game* "Lebron James with the monster dunk over Dillon Brooks! Lakers lead by 40!"`,
-    `"Welcome back to NBA Basketball, we've got a close one here in South Beach. Down to 5 seconds. Heat inbound, dangerous pass. Butler for 3! BANG! BANG! HEAT WIN THE GAME!"`,
-    `"You're watching NBA basketball on TNT. Steph with a deep 3! He got it! Look at Curry man, so inspirational..."`,
-    `*Some kind of basketball talk show is on. A wrinkly old man pounds his desk in an over-exaggerated fashion*. "Lebron James will never be Michael Jeffrey Jordan! He just doesn't have the clutch gene! You know it and I know it!"`,
+    `*It's the basketball game. The LA superstar throws down a huge dunk, eliciting loud cheers from the crowd*"`,
+    `"Welcome back to the game, we've got a close one here in South Beach. Down to 5 seconds. Miami to inbound. A 3 pointer! BANG! BANG! MIAMI WIN THE GAME!"`,
+    `"You're watching basketball on TNT. A deep 3! He got it! Look at him man, so inspirational..."`,
+    `*Some kind of basketball talk show is on. A wrinkly old man pounds his desk in an over-exaggerated fashion*. "He will never be that guy! He just doesn't have the clutch gene! You know it and I know it!"`,
   ]
 
   public static COOKING_CHANNEL_TEXT = [
-    `*A reality cooking show is on. Gordon Ramsay looks like he's about to blow a gasket* "Who cooked this salmon? It's <bleep> RAWW!"`,
-    `*Dinner service on a reality cooking show. Gordon looks pissed, as usual* "Come here big boy. Look at this lobster! LOOK AT IT! What is that? It's <bleep> RAW!"`,
-    `*It's a reality cooking show* "<bleep> off you useless <bleep>, the lamb is RAW! You donkey!"`,
-    `*A reality TV show is on about bad restaurant owners*. "He doesn't do crap at this restaurant. Just like last night he went up to every table and said 'Hello my name's NEENOOO'. - No, let me talk. Mr. Always Talking? You gonna let me talk?"`,
+    `*A reality cooking show is on. An angry celebrity chef slams his hand down* "Who cooked this salmon? It's <bleep> RAWW!"`,
+    `*Dinner service on a reality cooking show. An angry looking celebrity chef holds up a plate* "Come here big boy. Look at this! What is that? It's <bleep> RAW!"`,
+    `*It's a reality cooking show. An angry celebrity chef berates a contestant.* "<bleep> off you useless <bleep>, the lamb is RAW! You donkey!"`,
   ]
 
   public static NATURE_CHANEL_TEXT = [
-    `*A nature documentary is on. A majestic tiger strolls through the woods to join a group of other tigers.*. "Although Khan doesn't spend much time with his family, his presence here keeps away young males who might pose a threat to the cubs"`,
+    `*A nature documentary is on. A majestic tiger strolls through the woods to join a group of other tigers.*. The male's presence here keeps away others who might pose a threat to the cubs"`,
     `*It's a nature documentary. A tiger stalks a deer in the woods*. "A spotted deer appears. His stalking technique has improved. Now his success will depend on his timing."`,
     `*It's a nature documentary. A tiger cub approaches his father*. "Tiger fathers rarely meet their offspring. And he doesn't seem keen to get acquainted."`,
   ]

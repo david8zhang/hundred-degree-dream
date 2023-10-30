@@ -24,6 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  fps: { forceSetTimeOut: true, target: 60 },
   scene: [Preload, Overworld, Dream, DreamEnd],
 }
 

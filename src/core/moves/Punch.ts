@@ -133,6 +133,7 @@ export class Punch extends Move {
   }
 
   resetMoveState() {
+    this.isExecuting = false
     this.highlightedCircleIndex = 0
     this.timingType = TimingType.OK
     this.canStartMinigame = false

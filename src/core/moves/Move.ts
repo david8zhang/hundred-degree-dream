@@ -6,6 +6,7 @@ export enum TargetType {
   SINGLE = 'SINGLE',
   MULTI = 'MULTI',
   AREA = 'AREA',
+  ALLY_TEAM = 'ALLY_TEAM',
 }
 
 export interface MoveConfig {

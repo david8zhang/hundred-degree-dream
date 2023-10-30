@@ -26,7 +26,7 @@ export class Stomp extends Move {
   public setupKeyListener() {
     const fKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
     fKey.on('down', () => {
-      if (!this.isPressingKey) {
+      if (!this.isPressingKey && this.isExecuting) {
         this.isPressingKey = true
         this.scene.time.delayedCall(100, () => {
           this.isPressingKey = false
@@ -36,6 +36,7 @@ export class Stomp extends Move {
   }
 
   public execute(movePayload?: MovePayload | undefined): void {
+    this.isExecuting = true
     const enemyList = this.scene.getEnemies()
     this.cachedPosition = {
       x: this.member.sprite.x,
@@ -58,6 +59,7 @@ export class Stomp extends Move {
       ease: Phaser.Math.Easing.Sine.InOut,
       duration: 1000,
       onComplete: () => {
+        this.isExecuting = false
         tweenBack.remove()
         this.onMoveCompleted()
       },

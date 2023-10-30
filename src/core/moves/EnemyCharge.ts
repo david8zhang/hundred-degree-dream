@@ -69,21 +69,11 @@ export class EnemyCharge extends Move {
               duration: 75,
               onComplete: () => {
                 // Successful parry!
+                let didParry = false
                 if (this.scene.player.isParrying) {
-                  UINumber.createNumber(
-                    'Great!',
-                    this.scene,
-                    partyMemberToTarget.sprite.x,
-                    partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-                    'black',
-                    '30px',
-                    () => {
-                      this.tweenBack(cachedXPos)
-                    }
-                  )
-                } else {
-                  this.dealDamage(partyMemberToTarget, cachedXPos)
+                  didParry = true
                 }
+                this.dealDamage(partyMemberToTarget, cachedXPos, didParry)
               },
             })
           },
@@ -107,21 +97,43 @@ export class EnemyCharge extends Move {
     })
   }
 
-  dealDamage(partyMemberToTarget: PartyMember, cachedXPos: number) {
-    const damage = Math.round(
-      Constants.getWaveMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE
-    )
-    partyMemberToTarget.takeDamage(damage)
-    UINumber.createNumber(
-      `-${damage}`,
-      this.scene,
-      partyMemberToTarget.sprite.x,
-      partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-      'black',
-      '30px',
-      () => {
-        this.tweenBack(cachedXPos)
+  dealDamage(partyMemberToTarget: PartyMember, cachedXPos: number, didParry: boolean) {
+    let damage = Math.round(Constants.getWaveMultiplier(this.scene.waveNumber) * EnemyCharge.DAMAGE)
+    damage = damage - (didParry || partyMemberToTarget.isDefending ? 1 : 0)
+    if (damage > 0) {
+      partyMemberToTarget.takeDamage(damage)
+      UINumber.createNumber(
+        `-${damage}`,
+        this.scene,
+        partyMemberToTarget.sprite.x,
+        partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
+        'black',
+        '30px',
+        () => {
+          this.tweenBack(cachedXPos)
+        }
+      )
+    }
+
+    // Handle successful parries
+    if (didParry) {
+      let yPos = partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2
+      if (damage > 0) {
+        yPos -= 30
       }
-    )
+      UINumber.createNumber(
+        'Great!',
+        this.scene,
+        partyMemberToTarget.sprite.x,
+        yPos,
+        'black',
+        '30px',
+        () => {
+          if (damage === 0) {
+            this.tweenBack(cachedXPos)
+          }
+        }
+      )
+    }
   }
 }

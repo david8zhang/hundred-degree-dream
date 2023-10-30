@@ -1,6 +1,8 @@
 export enum SaveKeys {
   CURR_EXP = 'CURR_EXP',
   CURR_LEVEL = 'CURR_LEVEL',
+  CURR_PARTY = 'CURR_PARTY',
+  ACTIVE_ALLY = 'ACTIVE_ALLY',
 }
 
 export class Save {

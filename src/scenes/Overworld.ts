@@ -6,6 +6,7 @@ export enum OverworldState {
   CHOOSING_ACTIVITY = 'CHOOSING_ACTIVITY',
   WATCHING_TV = 'WATCHING_TV',
   FALLING_ASLEEP = 'FALLING_ASLEEP',
+  RECRUIT_ALLY = 'RECRUIT_ALLY',
 }
 
 export default class Overworld extends Phaser.Scene {
@@ -16,22 +17,86 @@ export default class Overworld extends Phaser.Scene {
   private continueText!: Phaser.GameObjects.Text
   private tvChannelSelected!: TVChannels
 
+  private recruitAllyText!: Phaser.GameObjects.Text
+  private allySprite!: Phaser.GameObjects.Sprite
+
   constructor() {
     super('overworld')
   }
 
   initializeSaveState() {
     if (Save.getData(SaveKeys.CURR_EXP) == undefined) {
+      Save.getData(SaveKeys.ACTIVE_ALLY, '')
+      Save.setData(SaveKeys.CURR_PARTY, ['Jambo'])
       Save.setData(SaveKeys.CURR_EXP, 0)
       Save.setData(SaveKeys.CURR_LEVEL, 1)
     }
   }
 
+  handleRecruitAlly() {
+    const currParty = Save.getData(SaveKeys.CURR_PARTY) as string[]
+    if (this.tvChannelSelected == TVChannels.SPORTS && !currParty.includes('Athlete')) {
+      this.saveAllyRecruitment('Athlete', currParty)
+      this.displayNewAllyRecruitAnimation('Athlete')
+    } else if (this.tvChannelSelected == TVChannels.COOKING && !currParty.includes('Chef')) {
+      this.saveAllyRecruitment('Chef', currParty)
+      this.displayNewAllyRecruitAnimation('Chef')
+    } else {
+      this.overworldState = OverworldState.CHOOSING_ACTIVITY
+      this.scene.start('dream')
+    }
+  }
+
+  saveAllyRecruitment(allyName: string, prevParty: string[]) {
+    Save.setData(SaveKeys.ACTIVE_ALLY, allyName)
+    const newParty = prevParty.concat(allyName)
+    Save.setData(SaveKeys.CURR_PARTY, newParty)
+  }
+
+  displayNewAllyRecruitAnimation(allyName: string) {
+    this.continueText.setVisible(false)
+    this.recruitAllyText.setText(`${allyName} has joined your party!`).setVisible(true).setAlpha(1)
+    this.tweens.add({
+      targets: [this.recruitAllyText],
+      alpha: {
+        from: 0,
+        to: 1,
+      },
+      duration: 500,
+    })
+    this.allySprite
+      .setTexture(allyName.toLowerCase())
+      .setPosition(-50, Constants.WINDOW_HEIGHT * (2 / 3))
+      .setVisible(true)
+    this.add.tween({
+      targets: [this.allySprite],
+      x: {
+        from: -50,
+        to: Constants.WINDOW_WIDTH / 2,
+      },
+      duration: 1000,
+      onComplete: () => {
+        this.add.tween({
+          targets: [this.allySprite],
+          delay: 2000,
+          x: {
+            from: Constants.WINDOW_WIDTH / 2,
+            to: Constants.WINDOW_WIDTH + 50,
+          },
+          duration: 1000,
+          onComplete: () => {
+            this.continueText.setVisible(true)
+          },
+        })
+      },
+    })
+  }
+
   displayTVChannelInfo() {
     this.overworldState = OverworldState.WATCHING_TV
-    const randomTVChannel = Phaser.Utils.Array.GetRandom(Object.keys(TVChannels))
+    this.tvChannelSelected = Phaser.Utils.Array.GetRandom(Object.keys(TVChannels))
     let channelText = ''
-    switch (randomTVChannel) {
+    switch (this.tvChannelSelected) {
       case TVChannels.SPORTS: {
         channelText = Phaser.Utils.Array.GetRandom(Constants.SPORTS_CHANNEL_TEXT)
         break
@@ -131,9 +196,24 @@ export default class Overworld extends Phaser.Scene {
         if (this.overworldState == OverworldState.WATCHING_TV) {
           this.displayFallingAsleepText()
         } else if (this.overworldState === OverworldState.FALLING_ASLEEP) {
+          this.tvChannelText.setVisible(false)
+          this.overworldState = OverworldState.RECRUIT_ALLY
+          this.handleRecruitAlly()
+        } else if (this.overworldState === OverworldState.RECRUIT_ALLY) {
+          this.overworldState = OverworldState.CHOOSING_ACTIVITY
           this.scene.start('dream')
         }
       })
       .setVisible(false)
+
+    // Recruit new ally text
+    this.recruitAllyText = this.add
+      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 3, '', {
+        fontSize: '30px',
+        color: 'white',
+      })
+      .setVisible(false)
+      .setOrigin(0.5, 1)
+    this.allySprite = this.add.sprite(0, 0, '').setVisible(false)
   }
 }

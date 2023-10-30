@@ -12,10 +12,12 @@ export class Preload extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('temp-player', 'temp-player.png')
-    this.load.image('temp-ally', 'temp-ally.png')
+    this.load.image('jambo', 'jambo.png')
+    this.load.image('chef', 'chef.png')
+    this.load.image('athlete', 'athlete.png')
     this.load.image('cursor', 'cursor.png')
     this.load.image('background', 'background.png')
+    this.load.image('shield', 'shield.png')
 
     // Enemies
     this.load.image('barnacle', 'enemies/barnacle.png')
@@ -23,6 +25,14 @@ export class Preload extends Phaser.Scene {
     this.load.image('slimeBlue', 'enemies/slimeBlue.png')
     this.load.image('spider', 'enemies/spider.png')
     this.load.image('snail', 'enemies/snail.png')
+
+    // Key prompts
+    this.load.image('downKey', 'key-prompts/downKey.png')
+    this.load.image('leftKey', 'key-prompts/leftKey.png')
+    this.load.image('rightKey', 'key-prompts/rightKey.png')
+    this.load.image('upKey', 'key-prompts/upKey.png')
+    this.load.image('fKey', 'key-prompts/fKey.png')
+    this.load.image('rKey', 'key-prompts/rKey.png')
   }
 
   create() {

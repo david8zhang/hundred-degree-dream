@@ -3,10 +3,15 @@ import { PartyMember } from './PartyMember'
 import { Dream } from '~/scenes/Dream'
 import { TargetCursor } from './TargetCursor'
 import { Move, TargetType } from './moves/Move'
+import { Save, SaveKeys } from '~/utils/Save'
+import { OptionsList } from './OptionsList'
+import { HealthInfo } from './HealthInfo'
 
 export enum ActionState {
   PICK_ACTION = 'PICK_ACTION',
   PICK_MOVE = 'PICK_MOVE',
+  PICK_TACTIC = 'PICK_TACTIC',
+  PICK_ALLY_TO_SWITCH = 'PICK_ALLY_TO_SWITCH',
   SELECT_TARGET = 'SELECT_TARGET',
   EXECUTING_MOVE = 'EXECUTING_MOVE',
   PARRYING = 'PARRYING',
@@ -21,7 +26,7 @@ export class Player {
   private scene: Dream
   public party: PartyMember[] = []
   private partyMemberToActIndex: number = 0
-  private healthGroup: Phaser.GameObjects.Group
+  private partyMemberHealthInfo: HealthInfo[] = []
 
   // Actions (Fight, Tactics, Items)
   private fightActionText!: Phaser.GameObjects.Text
@@ -33,6 +38,16 @@ export class Player {
   // Moves (Attacks)
   private movesMenu!: Phaser.GameObjects.Group
   private selectedMoveIndex: number = 0
+
+  // Tactics
+  private defendText!: Phaser.GameObjects.Text
+  private switchAllyText!: Phaser.GameObjects.Text
+  private selectedTacticIndex: number = 0
+  private tactics: Phaser.GameObjects.Text[] = []
+
+  // List of allies
+  private allyList: OptionsList
+  private subbedPartyMembers: PartyMember[] = []
 
   // Targeting cursors
   private targetCursor: TargetCursor
@@ -46,9 +61,10 @@ export class Player {
     this.scene = scene
     this.movesMenu = this.scene.add.group()
     this.targetCursor = new TargetCursor(this.scene)
-    this.healthGroup = this.scene.add.group()
+    this.allyList = new OptionsList(this.scene)
     this.setupPartyMembers(config.characterConfigs)
     this.setupActions()
+    this.setupTactics()
     this.setupKeyListener()
     this.setupHealth()
   }
@@ -56,33 +72,17 @@ export class Player {
   setupHealth() {
     let yPos = 45
     this.party.forEach((partyMember: PartyMember) => {
-      const partyMemberIcon = this.scene.add
-        .sprite(30, yPos, partyMember.sprite.texture.key)
-        .setScale(0.5)
-        .setOrigin(0, 0.5)
-      const healthText = this.scene.add
-        .text(
-          partyMemberIcon.x + partyMemberIcon.displayWidth + 15,
-          yPos,
-          `${partyMember.currHealth}/${partyMember.maxHealth}`,
-          {
-            fontSize: '25px',
-            color: 'black',
-          }
-        )
-        .setOrigin(0, 0.5)
-        .setData('ref', partyMember)
-      yPos += healthText.displayHeight + 30
-      this.healthGroup.add(healthText)
+      const newHealthInfo = new HealthInfo(this.scene, {
+        position: { x: 30, y: yPos },
+        partyMember,
+      })
+      this.partyMemberHealthInfo.push(newHealthInfo)
+      yPos += newHealthInfo.displayHeight + 45
     })
   }
 
   updateHealth() {
-    this.healthGroup.children.entries.forEach((obj) => {
-      const text = obj as Phaser.GameObjects.Text
-      const partyMember = text.getData('ref') as PartyMember
-      text.setText(`${partyMember.currHealth}/${partyMember.maxHealth}`)
-    })
+    this.partyMemberHealthInfo.forEach((h) => h.updateCurrHealth())
   }
 
   setupActions() {
@@ -102,11 +102,32 @@ export class Player {
     this.actions.push(this.tacticsActionText)
   }
 
+  setupTactics() {
+    const currParty = Save.getData(SaveKeys.CURR_PARTY) as string[]
+    this.defendText = this.scene.add
+      .text(0, 0, 'Defend', {
+        fontSize: '25px',
+        color: 'black',
+      })
+      .setVisible(false)
+    if (currParty.length > 2) {
+      this.switchAllyText = this.scene.add
+        .text(0, 0, 'Switch', {
+          fontSize: '25px',
+          color: 'black',
+        })
+        .setVisible(false)
+      this.tactics.push(this.switchAllyText)
+    }
+    this.tactics.push(this.defendText)
+  }
+
   get partyMemberToAct() {
     return this.livingParty[this.partyMemberToActIndex]
   }
 
   setupPartyMembers(characterConfigs: CharacterConfig[]) {
+    const allyName = Save.getData(SaveKeys.ACTIVE_ALLY) as string
     let xPos = Constants.RIGHTMOST_PLAYER_X_POS
     const yPos = 400
     characterConfigs.forEach((config) => {
@@ -117,6 +138,7 @@ export class Player {
           y: yPos,
         },
         player: this,
+        isActive: config.name == allyName || config.name == 'Jambo',
       })
       this.party.push(partyMember)
       xPos -= partyMember.sprite.displayWidth + 100
@@ -144,6 +166,9 @@ export class Player {
   }
 
   startTurn() {
+    this.party.forEach((p) => {
+      p.setDefending(false)
+    })
     this.partyMemberToActIndex = 0
     this.actionState = ActionState.PICK_ACTION
     this.showActions()
@@ -154,6 +179,23 @@ export class Player {
     const selectedAction = this.actions[this.selectedActionIndex]
     selectedAction.setStroke('green', 2)
     selectedAction.setStyle({ color: 'green' })
+  }
+
+  displayTacticsMenu() {
+    this.defendText
+      .setPosition(
+        this.partyMemberToAct.sprite.x + this.partyMemberToAct.sprite.displayWidth / 2,
+        this.partyMemberToAct.sprite.y - this.partyMemberToAct.sprite.displayHeight / 2
+      )
+      .setVisible(true)
+    if (this.switchAllyText) {
+      this.switchAllyText
+        .setPosition(
+          this.partyMemberToAct.sprite.x + this.partyMemberToAct.sprite.displayWidth / 2,
+          this.defendText.y + this.defendText.displayHeight + 15
+        )
+        .setVisible(true)
+    }
   }
 
   showActions() {
@@ -190,19 +232,16 @@ export class Player {
   }
 
   displayMovesMenu() {
-    this.movesMenu.clear()
-    let yPos = this.partyMemberToAct.sprite.y - this.partyMemberToAct.sprite.displayHeight / 2
+    this.movesMenu.clear(true, true)
+    let yPos = Constants.WINDOW_HEIGHT / 3
     const moveNames = this.partyMemberToAct.getAllMoveNames()
     moveNames.forEach((name) => {
-      const moveNameText = this.scene.add.text(
-        this.partyMemberToAct.sprite.x + this.partyMemberToAct.sprite.displayWidth / 2 + 15,
-        yPos,
-        name,
-        {
+      const moveNameText = this.scene.add
+        .text(Constants.WINDOW_WIDTH / 2, yPos, name, {
           fontSize: '25px',
           color: 'black',
-        }
-      )
+        })
+        .setDepth(1000)
       moveNameText.setData('ref', this.partyMemberToAct.moveMapping[name])
       this.movesMenu.add(moveNameText)
       yPos += moveNameText.displayHeight + 15
@@ -240,16 +279,20 @@ export class Player {
   }
 
   selectHighlightedAction() {
-    this.actionState = ActionState.PICK_MOVE
     const selectedAction = this.actions[this.selectedActionIndex]
     switch (selectedAction.text) {
       case 'Fight': {
+        this.actionState = ActionState.PICK_MOVE
         this.hideActionMenu()
         this.displayMovesMenu()
         this.highlightSelectedMove()
         break
       }
       case 'Tactics': {
+        this.actionState = ActionState.PICK_TACTIC
+        this.hideActionMenu()
+        this.displayTacticsMenu()
+        this.highlightSelectedTactic()
         break
       }
     }
@@ -261,7 +304,7 @@ export class Player {
     const selectedMove = moveList[this.selectedMoveIndex].getData('ref') as Move
 
     // If the target type is an unspecified area, start the move execution immediately
-    if (selectedMove.targetType === TargetType.AREA) {
+    if (selectedMove.targetType === TargetType.ALLY_TEAM) {
       this.actionState = ActionState.EXECUTING_MOVE
       selectedMove.execute()
     } else {
@@ -269,19 +312,52 @@ export class Player {
     }
   }
 
+  selectHighlightedTactic() {
+    const selectedTactic = this.tactics[this.selectedTacticIndex]
+    switch (selectedTactic.text) {
+      case 'Defend': {
+        this.hideTactics()
+        this.partyMemberToAct.setDefending(true)
+        this.onMoveCompleted()
+        break
+      }
+      case 'Switch': {
+        this.actionState = ActionState.PICK_ALLY_TO_SWITCH
+        this.hideTactics()
+        this.showAllyList()
+        break
+      }
+    }
+  }
+
+  showAllyList() {
+    const partyMembers = Save.getData(SaveKeys.CURR_PARTY) as string[]
+    const currParty = this.party.map((p) => p.name)
+    const allies = partyMembers.filter((p) => !currParty.includes(p))
+    this.allyList.displayOptions({
+      position: {
+        x: Constants.WINDOW_WIDTH / 2,
+        y: Constants.WINDOW_HEIGHT / 3,
+      },
+      options: allies,
+    })
+  }
+
   handleKeyPressForPickAction(keyCode: number) {
-    switch (keyCode) {
-      case Phaser.Input.Keyboard.KeyCodes.LEFT: {
-        this.scrollActions(-1)
-        break
-      }
-      case Phaser.Input.Keyboard.KeyCodes.RIGHT: {
-        this.scrollActions(1)
-        break
-      }
-      case Phaser.Input.Keyboard.KeyCodes.SPACE: {
-        this.selectHighlightedAction()
-        break
+    if (this.scene.currTurn === Side.PLAYER) {
+      switch (keyCode) {
+        case Phaser.Input.Keyboard.KeyCodes.LEFT: {
+          this.scrollActions(-1)
+          break
+        }
+        case Phaser.Input.Keyboard.KeyCodes.RIGHT: {
+          this.scrollActions(1)
+          break
+        }
+        case Phaser.Input.Keyboard.KeyCodes.SPACE: {
+          this.selectHighlightedAction()
+          break
+        }
       }
     }
   }
@@ -304,6 +380,49 @@ export class Player {
     }
   }
 
+  hideTactics() {
+    this.defendText.setVisible(false)
+    if (this.switchAllyText) {
+      this.switchAllyText.setVisible(false)
+    }
+  }
+
+  scrollTactic(scrollAmount: number) {
+    const previouslySelectedTactic = this.tactics[this.selectedTacticIndex]
+    previouslySelectedTactic.setStroke('black', 0).setColor('black')
+    this.selectedTacticIndex += scrollAmount
+    if (this.selectedTacticIndex == -1) {
+      this.selectedTacticIndex = this.tactics.length - 1
+    }
+    if (this.selectedTacticIndex == this.tactics.length) {
+      this.selectedTacticIndex = 0
+    }
+    this.highlightSelectedTactic()
+  }
+
+  highlightSelectedTactic() {
+    const currentlySelectedTactic = this.tactics[this.selectedTacticIndex]
+    currentlySelectedTactic.setStroke('green', 2).setColor('green')
+  }
+
+  handleKeyPressForPickTactic(keyCode: number) {
+    switch (keyCode) {
+      case Phaser.Input.Keyboard.KeyCodes.UP: {
+        this.scrollTactic(-1)
+        break
+      }
+      case Phaser.Input.Keyboard.KeyCodes.DOWN: {
+        this.scrollTactic(1)
+        break
+      }
+      case Phaser.Input.Keyboard.KeyCodes.SPACE: {
+        this.hideTactics()
+        this.selectHighlightedTactic()
+        break
+      }
+    }
+  }
+
   handleKeyPressForSelectTarget(keyCode: number) {
     switch (keyCode) {
       case Phaser.Input.Keyboard.KeyCodes.LEFT: {
@@ -320,6 +439,7 @@ export class Player {
         const moveList = this.movesMenu.children.entries
         const selectedMove = moveList[this.selectedMoveIndex].getData('ref') as Move
         selectedMove.execute({ targets: this.targetCursor.getSelectedTargets() })
+        this.selectedMoveIndex = 0
         this.targetCursor.setVisible(false)
         this.targetCursor.reset()
         break
@@ -333,9 +453,9 @@ export class Player {
         if (!this.parryCooldown) {
           this.parryCooldown = true
           this.isParrying = true
-          this.party[0].sprite.setTint(0x0000ff)
+          this.livingParty[0].sprite.setTint(0x0000ff)
           this.scene.time.delayedCall(150, () => {
-            this.party[0].sprite.clearTint()
+            this.livingParty[0].sprite.clearTint()
             this.isParrying = false
           })
           this.parryCooldownTimerEvent = this.scene.time.delayedCall(500, () => {
@@ -346,6 +466,69 @@ export class Player {
     }
   }
 
+  handleKeyPressForPickAllyToSwitch(keyCode: number) {
+    switch (keyCode) {
+      case Phaser.Input.Keyboard.KeyCodes.UP: {
+        this.allyList.scrollOption(-1)
+        break
+      }
+      case Phaser.Input.Keyboard.KeyCodes.DOWN: {
+        this.allyList.scrollOption(1)
+        break
+      }
+      case Phaser.Input.Keyboard.KeyCodes.SPACE: {
+        const selectedOption = this.allyList.selectedOption as Phaser.GameObjects.Text
+        this.handleSwitchPartyMember(selectedOption.text)
+        this.allyList.hide()
+        break
+      }
+    }
+  }
+
+  handleSwitchPartyMember(allyToSwitchInName: string) {
+    const currAlly = this.party.find((p) => p.name !== 'Jambo')!
+    let allyToSwitchIn = this.subbedPartyMembers.find((p) => p.name === allyToSwitchInName)
+    if (allyToSwitchIn) {
+      this.subbedPartyMembers = this.subbedPartyMembers.filter((p) => p.name != allyToSwitchInName)
+      allyToSwitchIn.sprite.setVisible(true)
+    } else {
+      allyToSwitchIn = new PartyMember(this.scene, {
+        name: allyToSwitchInName,
+        ...Constants.CHARACTER_CONFIGS[allyToSwitchInName],
+        position: {
+          x: -50,
+          y: currAlly.sprite.y,
+        },
+      })
+    }
+    this.subbedPartyMembers.push(currAlly)
+    this.scene.tweens.add({
+      targets: [allyToSwitchIn.sprite],
+      x: {
+        from: -50,
+        to: currAlly.sprite.x,
+      },
+      duration: 500,
+    })
+    this.scene.tweens.add({
+      targets: [currAlly.sprite],
+      x: {
+        from: currAlly.sprite.x,
+        to: -50,
+      },
+      duration: 500,
+      onComplete: () => {
+        currAlly.sprite.setVisible(false)
+        this.party[1] = allyToSwitchIn!
+        this.actionState = ActionState.PICK_ACTION
+        this.partyMemberHealthInfo.forEach((h, index) => {
+          h.updatePartyMember(this.party[index])
+        })
+        this.showActions()
+      },
+    })
+  }
+
   resetParryState() {
     this.parryCooldown = false
     if (this.parryCooldownTimerEvent) {
@@ -353,8 +536,34 @@ export class Player {
     }
   }
 
+  goBack() {
+    switch (this.actionState) {
+      case ActionState.PICK_MOVE: {
+        this.actionState = ActionState.PICK_ACTION
+        this.movesMenu.setVisible(false)
+        this.showActions()
+        break
+      }
+      case ActionState.SELECT_TARGET: {
+        this.actionState = ActionState.PICK_MOVE
+        this.movesMenu.setVisible(true)
+        this.targetCursor.setVisible(false)
+        break
+      }
+      case ActionState.PICK_TACTIC: {
+        this.actionState = ActionState.PICK_ACTION
+        this.hideTactics()
+        this.showActions()
+        break
+      }
+    }
+  }
+
   setupKeyListener() {
     this.scene.input.keyboard.on('keydown', (e) => {
+      if (e.keyCode === Phaser.Input.Keyboard.KeyCodes.ESC && this.scene.currTurn === Side.PLAYER) {
+        this.goBack()
+      }
       switch (this.actionState) {
         case ActionState.PICK_ACTION: {
           this.handleKeyPressForPickAction(e.keyCode)
@@ -364,12 +573,20 @@ export class Player {
           this.handleKeyPressForPickMove(e.keyCode)
           break
         }
+        case ActionState.PICK_TACTIC: {
+          this.handleKeyPressForPickTactic(e.keyCode)
+          break
+        }
         case ActionState.SELECT_TARGET: {
           this.handleKeyPressForSelectTarget(e.keyCode)
           break
         }
         case ActionState.PARRYING: {
           this.handleKeyPressForParry(e.keyCode)
+          break
+        }
+        case ActionState.PICK_ALLY_TO_SWITCH: {
+          this.handleKeyPressForPickAllyToSwitch(e.keyCode)
           break
         }
       }

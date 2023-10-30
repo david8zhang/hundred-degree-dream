@@ -13,9 +13,11 @@ export interface PartyMemberConfig {
   maxHealth: number
   spriteTexture: string
   player: Player
+  isActive: boolean
 }
 
 export class PartyMember {
+  public name: string
   private scene: Dream
   private player: Player
   public currHealth: number
@@ -24,22 +26,46 @@ export class PartyMember {
   public moveMapping: {
     [key: string]: Move
   }
+  public isActive: boolean = false
+  public defendingText: Phaser.GameObjects.Text
 
   constructor(scene: Dream, config: PartyMemberConfig) {
     this.scene = scene
     this.currHealth = config.maxHealth
     this.maxHealth = config.maxHealth
     this.player = config.player
+    this.name = config.name
     this.sprite = this.scene.physics.add.sprite(
       config.position.x,
       config.position.y,
       config.spriteTexture
     )
+    this.isActive = config.isActive
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.moveNames, this)
+    this.defendingText = this.scene.add
+      .text(this.sprite.x, this.sprite.y + this.sprite.displayHeight / 2 + 20, 'Defending', {
+        fontSize: '18px',
+        color: 'black',
+      })
+      .setOrigin(0.5, 0.5)
+      .setVisible(false)
+  }
+
+  heal(amount: number) {
+    this.currHealth = Math.min(this.maxHealth, this.currHealth)
+    this.player.updateHealth()
   }
 
   getAllMoveNames() {
     return Object.keys(this.moveMapping)
+  }
+
+  setDefending(isDefending: boolean) {
+    this.defendingText.setVisible(isDefending)
+  }
+
+  get isDefending() {
+    return this.defendingText.visible
   }
 
   get isDead() {

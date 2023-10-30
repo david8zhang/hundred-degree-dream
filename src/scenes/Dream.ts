@@ -11,6 +11,7 @@ import { DreamEndPayload } from './DreamEnd'
 import { EnemyConfig } from '~/utils/EnemyConfigs'
 import { Stomp } from '~/core/moves/Stomp'
 import { Save, SaveKeys } from '~/utils/Save'
+import { LetHimCook } from '~/core/moves/LetHimCook'
 
 export class Dream extends Phaser.Scene {
   public player!: Player
@@ -37,11 +38,20 @@ export class Dream extends Phaser.Scene {
     return Math.round(damage + (level - 1) * 0.25)
   }
 
+  getCharacterConfigs() {
+    const activeAlly = Save.getData(SaveKeys.ACTIVE_ALLY) as string
+    const allCharacters = [Constants.CHARACTER_CONFIGS['Jambo']]
+    if (activeAlly) {
+      allCharacters.push(Constants.CHARACTER_CONFIGS[activeAlly])
+    }
+    return allCharacters
+  }
+
   create() {
     this.add
       .image(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'background')
       .setOrigin(0.5, 0.5)
-    const characterConfigs = this.applyLevelMultipliers(Constants.PARTY_MEMBER_CONFIGS)
+    const characterConfigs = this.applyLevelMultipliers(this.getCharacterConfigs())
     this.player = new Player(this, {
       characterConfigs,
     })
@@ -82,6 +92,10 @@ export class Dream extends Phaser.Scene {
         }
         case MoveNames.STOMP: {
           moveMapping[moveName] = new Stomp(this, member)
+          break
+        }
+        case MoveNames.LET_HIM_COOK: {
+          moveMapping[moveName] = new LetHimCook(this, member)
           break
         }
       }
