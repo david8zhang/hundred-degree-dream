@@ -21,22 +21,7 @@ export class EnemyCharge extends Move {
 
   public execute(movePayload?: MovePayload | undefined): void {
     // Sort the player party by distance to get the current party member in front
-    const playerPartySortedByDistance = this.scene.getPlayerParty().sort((a, b) => {
-      const distToA = Phaser.Math.Distance.Between(
-        a.sprite.x,
-        a.sprite.y,
-        this.member.sprite.x,
-        this.member.sprite.y
-      )
-      const distToB = Phaser.Math.Distance.Between(
-        b.sprite.x,
-        b.sprite.y,
-        this.member.sprite.x,
-        this.member.sprite.y
-      )
-      return distToA - distToB
-    })
-    const partyMemberToTarget = playerPartySortedByDistance[0]
+    const partyMemberToTarget = Phaser.Utils.Array.GetRandom(this.scene.getPlayerParty())
     const distance = Phaser.Math.Distance.Between(
       partyMemberToTarget.sprite.x,
       partyMemberToTarget.sprite.y,
@@ -115,8 +100,8 @@ export class EnemyCharge extends Move {
       )
     }
 
-    // Handle successful parries
-    if (didParry) {
+    // Handle successful parries or defense
+    if (didParry || partyMemberToTarget.isDefending) {
       let yPos = partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2
       if (damage > 0) {
         yPos -= 30

@@ -35,11 +35,9 @@ export class PartyMember {
     this.maxHealth = config.maxHealth
     this.player = config.player
     this.name = config.name
-    this.sprite = this.scene.physics.add.sprite(
-      config.position.x,
-      config.position.y,
-      config.spriteTexture
-    )
+    this.sprite = this.scene.physics.add
+      .sprite(config.position.x, config.position.y, config.spriteTexture)
+      .setData('ref', this)
     this.isActive = config.isActive
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.moveNames, this)
     this.defendingText = this.scene.add
@@ -52,7 +50,7 @@ export class PartyMember {
   }
 
   heal(amount: number) {
-    this.currHealth = Math.min(this.maxHealth, this.currHealth)
+    this.currHealth = Math.min(this.maxHealth, this.currHealth + amount)
     this.player.updateHealth()
   }
 

@@ -45,13 +45,13 @@ export class Constants {
       name: 'Athlete',
       maxHealth: 10,
       spriteTexture: 'athlete',
-      moveNames: [MoveNames.PUNCH],
+      moveNames: [MoveNames.PUNCH, MoveNames.RAINING_THREES],
     },
     Tiger: {
       name: 'Tiger',
       maxHealth: 10,
       spriteTexture: 'tiger',
-      moveNames: [MoveNames.PUNCH],
+      moveNames: [MoveNames.PUNCH, MoveNames.MAUL],
     },
   }
 

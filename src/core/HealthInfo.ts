@@ -52,5 +52,6 @@ export class HealthInfo {
     this.partyMember = partyMember
     this.icon.setTexture(partyMember.sprite.texture.key)
     this.text.setText(`${partyMember.currHealth}/${partyMember.maxHealth}`)
+    this.text.setPosition(this.icon.x + this.icon.displayWidth + 15, this.text.y)
   }
 }

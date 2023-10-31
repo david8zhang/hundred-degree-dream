@@ -12,6 +12,9 @@ import { EnemyConfig } from '~/utils/EnemyConfigs'
 import { Stomp } from '~/core/moves/Stomp'
 import { Save, SaveKeys } from '~/utils/Save'
 import { LetHimCook } from '~/core/moves/LetHimCook'
+import { RainingThrees } from '~/core/moves/RainingThrees'
+import { Maul } from '~/core/moves/Maul'
+import { EnemyMulti } from '~/core/moves/EnemyMulti'
 
 export class Dream extends Phaser.Scene {
   public player!: Player
@@ -96,6 +99,18 @@ export class Dream extends Phaser.Scene {
         }
         case MoveNames.LET_HIM_COOK: {
           moveMapping[moveName] = new LetHimCook(this, member)
+          break
+        }
+        case MoveNames.RAINING_THREES: {
+          moveMapping[moveName] = new RainingThrees(this, member)
+          break
+        }
+        case MoveNames.MAUL: {
+          moveMapping[moveName] = new Maul(this, member)
+          break
+        }
+        case MoveNames.ENEMY_MULTI: {
+          moveMapping[moveName] = new EnemyMulti(this, member)
           break
         }
       }

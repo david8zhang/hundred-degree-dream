@@ -10,14 +10,14 @@ export interface EnemyConfig {
 export const BARNACLE = {
   maxHealth: 4,
   spriteTexture: 'barnacle',
-  moveNames: [MoveNames.ENEMY_CHARGE],
+  moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
   baseExpReward: 6,
 }
 
 export const GREEN_FISH = {
   maxHealth: 4,
   spriteTexture: 'fishGreen',
-  moveNames: [MoveNames.ENEMY_CHARGE],
+  moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
   baseExpReward: 6,
 }
 

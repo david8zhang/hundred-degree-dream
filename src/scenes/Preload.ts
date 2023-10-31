@@ -15,9 +15,11 @@ export class Preload extends Phaser.Scene {
     this.load.image('jambo', 'jambo.png')
     this.load.image('chef', 'chef.png')
     this.load.image('athlete', 'athlete.png')
+    this.load.image('tiger', 'tiger.png')
     this.load.image('cursor', 'cursor.png')
     this.load.image('background', 'background.png')
-    this.load.image('shield', 'shield.png')
+    this.load.image('crosshair', 'crosshair.png')
+    this.load.image('basketball', 'basketball.png')
 
     // Enemies
     this.load.image('barnacle', 'enemies/barnacle.png')

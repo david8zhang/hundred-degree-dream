@@ -3,14 +3,17 @@ import { Dream } from '~/scenes/Dream'
 import { EnemyMember } from './EnemyMember'
 import { ALL_ENEMY_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
 import { Save, SaveKeys } from '~/utils/Save'
+import { ActionState } from './Player'
 
 export class CPU {
   public enemies: EnemyMember[] = []
+  public enemyGroup: Phaser.Physics.Arcade.Group
   private scene: Dream
   private enemyToActIndex: number = 0
 
   constructor(scene: Dream) {
     this.scene = scene
+    this.enemyGroup = this.scene.physics.add.group()
   }
 
   generateEnemies() {
@@ -20,7 +23,17 @@ export class CPU {
     }
     let xPos = Constants.LEFTMOST_CPU_X_POS
     const yPos = 400
-    const numEnemies = Phaser.Math.Between(1, 3)
+
+    let numEnemies = 1
+    if (this.scene.waveNumber >= 0 && this.scene.waveNumber < 3) {
+      numEnemies = Phaser.Math.Between(1, 3)
+    }
+    if (this.scene.waveNumber >= 3 && this.scene.waveNumber < 5) {
+      numEnemies = Phaser.Math.Between(2, 3)
+    }
+    if (this.scene.waveNumber >= 5) {
+      numEnemies = 3
+    }
 
     for (let i = 0; i < numEnemies; i++) {
       const randomConfig = Phaser.Utils.Array.GetRandom(ALL_ENEMY_CONFIGS)
@@ -37,8 +50,10 @@ export class CPU {
           ),
           baseExpReward: expReward,
         },
+        id: `enemy-${i}`,
       })
       this.enemies.push(enemy)
+      this.enemyGroup.add(enemy.sprite)
       xPos += 125
     }
   }

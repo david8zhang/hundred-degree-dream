@@ -10,28 +10,34 @@ export interface EnemyMemberConfig {
     y: number
   }
   enemyConfig: EnemyConfig
+  id: string
 }
 
 export class EnemyMember {
   private scene: Dream
   public currHealth: number
   public maxHealth: number
-  public sprite: Phaser.GameObjects.Sprite
+  public sprite: Phaser.Physics.Arcade.Sprite
   public moveMapping: {
     [key: string]: Move
   }
   private healthbar: UIValueBar
   private healthText: Phaser.GameObjects.Text
   private enemyConfig: EnemyConfig
+  public id: string = ''
+  private isAlreadyDying: boolean = false
 
   constructor(scene: Dream, config: EnemyMemberConfig) {
     this.scene = scene
+    this.id = config.id
     this.enemyConfig = config.enemyConfig
     this.currHealth = config.enemyConfig.maxHealth
     this.maxHealth = config.enemyConfig.maxHealth
-    this.sprite = this.scene.add
+    this.sprite = this.scene.physics.add
       .sprite(config.position.x, config.position.y, config.enemyConfig.spriteTexture)
       .setOrigin(0.5, 0.5)
+      .setData('ref', this)
+
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.enemyConfig.moveNames, this)
 
     const healthbarWidth = 75
@@ -62,10 +68,11 @@ export class EnemyMember {
 
   takeDamage(damage: number) {
     this.currHealth = Math.max(0, this.currHealth - damage)
-    if (this.currHealth == 0) {
+    if (this.currHealth == 0 && !this.isAlreadyDying) {
+      this.isAlreadyDying = true
       this.scene.enemiesDefeated.push(this.enemyConfig)
       this.scene.tweens.add({
-        delay: 1000,
+        delay: 1500,
         targets: [this.sprite],
         alpha: {
           from: 1,

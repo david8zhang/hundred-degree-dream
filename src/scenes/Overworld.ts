@@ -41,6 +41,9 @@ export default class Overworld extends Phaser.Scene {
     } else if (this.tvChannelSelected == TVChannels.COOKING && !currParty.includes('Chef')) {
       this.saveAllyRecruitment('Chef', currParty)
       this.displayNewAllyRecruitAnimation('Chef')
+    } else if (this.tvChannelSelected == TVChannels.NATURE && !currParty.includes('Tiger')) {
+      this.saveAllyRecruitment('Tiger', currParty)
+      this.displayNewAllyRecruitAnimation('Tiger')
     } else {
       this.overworldState = OverworldState.CHOOSING_ACTIVITY
       this.scene.start('dream')

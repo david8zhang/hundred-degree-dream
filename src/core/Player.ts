@@ -304,7 +304,10 @@ export class Player {
     const selectedMove = moveList[this.selectedMoveIndex].getData('ref') as Move
 
     // If the target type is an unspecified area, start the move execution immediately
-    if (selectedMove.targetType === TargetType.ALLY_TEAM) {
+    if (
+      selectedMove.targetType === TargetType.ALLY_TEAM ||
+      selectedMove.targetType === TargetType.AREA
+    ) {
       this.actionState = ActionState.EXECUTING_MOVE
       selectedMove.execute()
     } else {
@@ -499,6 +502,8 @@ export class Player {
           x: -50,
           y: currAlly.sprite.y,
         },
+        isActive: false,
+        player: this,
       })
     }
     this.subbedPartyMembers.push(currAlly)
