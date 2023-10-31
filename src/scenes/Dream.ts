@@ -123,14 +123,14 @@ export class Dream extends Phaser.Scene {
   }
 
   handleRoundOver() {
-    if (this.getPlayerParty().length == 0) {
+    if (this.getPlayerParty().length == 0 || this.waveNumber == 1) {
       const dreamEndPayload: DreamEndPayload = {
         enemiesDefeated: this.enemiesDefeated,
         wavesCompleted: Math.max(0, this.waveNumber - 1),
       }
       this.scene.start('dream-end', dreamEndPayload)
       this.enemiesDefeated = []
-      this.waveNumber = 0
+      this.waveNumber = 1
     } else {
       this.handleWaveComplete()
     }

@@ -12,6 +12,7 @@ export interface DreamEndPayload {
 export enum DreamEndState {
   STATS = 'STATS',
   EXP_GAIN = 'EXP_GAIN',
+  SHOW_FEVER_DEGREES = 'SHOW_FEVER_DEGREES',
 }
 
 export class DreamEnd extends Phaser.Scene {
@@ -29,6 +30,10 @@ export class DreamEnd extends Phaser.Scene {
   private continueButton!: Button
   private currState = DreamEndState.STATS
   private totalExpGained: number = 0
+
+  // Countdown until nightmare king
+  private feverDegreeText!: Phaser.GameObjects.Text
+  private feverDegreeValue!: Phaser.GameObjects.Text
 
   constructor() {
     super('dream-end')
@@ -91,6 +96,20 @@ export class DreamEnd extends Phaser.Scene {
         color: 'white',
       })
       .setOrigin(0, 0.5)
+    this.feverDegreeText = this.add
+      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 3, 'Fever Temp.', {
+        fontSize: '30px',
+        color: 'white',
+      })
+      .setOrigin(0.5, 1)
+      .setVisible(false)
+    this.feverDegreeValue = this.add
+      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, '', {
+        fontSize: '75px',
+        color: 'white',
+      })
+      .setOrigin(0.5, 0.5)
+      .setVisible(false)
   }
 
   init(data: DreamEndPayload) {
@@ -127,7 +146,6 @@ export class DreamEnd extends Phaser.Scene {
     const numRepeats = this.totalExpGained / expGainPerInc
     this.time.addEvent({
       delay: 25,
-      startAt: 10,
       repeat: numRepeats - 1,
       callback: () => {
         this.expBar.setCurrValue(this.expBar.currValue + expGainPerInc)
@@ -223,12 +241,68 @@ export class DreamEnd extends Phaser.Scene {
           })
         },
       })
+    } else {
+      this.time.delayedCall(25 * numRepeats, () => {
+        this.applyExpGain(currLevel)
+        this.continueButton.setVisible(true)
+      })
     }
   }
 
+  displayFeverDegreeProgression() {
+    this.feverDegreeValue.setVisible(true)
+    this.feverDegreeText.setVisible(true)
+    this.continueButton.setVisible(false)
+    let currFeverDegrees = Save.getData(SaveKeys.FEVER_DEGREES) as number
+    this.feverDegreeValue.setText(`${currFeverDegrees}°`)
+    this.time.addEvent({
+      repeat: 99,
+      delay: 20,
+      callback: () => {
+        currFeverDegrees++
+        this.feverDegreeValue.setText(`${currFeverDegrees}°`)
+      },
+    })
+
+    this.time.delayedCall(2000, () => {
+      Save.setData(SaveKeys.FEVER_DEGREES, currFeverDegrees)
+
+      if (currFeverDegrees === 1000) {
+        this.add.tween({
+          targets: [this.feverDegreeValue],
+          scale: {
+            from: 1,
+            to: 1.5,
+          },
+          duration: 500,
+          repeat: 2,
+          yoyo: true,
+          ease: Phaser.Math.Easing.Sine.InOut,
+          onUpdate: () => {
+            this.feverDegreeValue
+              .setPosition(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2)
+              .setOrigin(0.5, 0.5)
+          },
+          onComplete: () => {
+            this.continueButton.setVisible(true)
+          },
+        })
+      } else {
+        this.continueButton.setVisible(true)
+      }
+    })
+  }
+
+  hideExpGainStats() {
+    this.expBar.setVisible(false)
+    this.currLevelText.setVisible(false)
+    this.nextLevelText.setVisible(false)
+  }
+
   applyExpGain(newLevel: number) {
+    const currExpLevel = Save.getData(SaveKeys.CURR_EXP) as number
     Save.setData(SaveKeys.CURR_LEVEL, newLevel)
-    Save.setData(SaveKeys.CURR_EXP, this.totalExpGained % 100)
+    Save.setData(SaveKeys.CURR_EXP, (currExpLevel + this.totalExpGained) % 100)
   }
 
   create() {
@@ -238,12 +312,22 @@ export class DreamEnd extends Phaser.Scene {
       height: 45,
       text: 'Continue',
       onClick: () => {
-        if (this.currState == DreamEndState.STATS) {
-          this.hideEndOfRoundStats()
-          this.displayExpGainStats()
-        } else {
-          this.currState = DreamEndState.STATS
-          this.scene.start('overworld')
+        switch (this.currState) {
+          case DreamEndState.STATS: {
+            this.hideEndOfRoundStats()
+            this.displayExpGainStats()
+            break
+          }
+          case DreamEndState.EXP_GAIN: {
+            this.currState = DreamEndState.SHOW_FEVER_DEGREES
+            this.hideExpGainStats()
+            this.displayFeverDegreeProgression()
+            break
+          }
+          case DreamEndState.SHOW_FEVER_DEGREES: {
+            this.currState = DreamEndState.STATS
+            this.scene.start('overworld')
+          }
         }
       },
       strokeWidth: 0,

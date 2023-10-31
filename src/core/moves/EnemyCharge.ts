@@ -56,6 +56,10 @@ export class EnemyCharge extends Move {
                 // Successful parry!
                 let didParry = false
                 if (this.scene.player.isParrying) {
+                  partyMemberToTarget.sprite.setTint(0x0000ff)
+                  this.scene.time.delayedCall(200, () => {
+                    partyMemberToTarget.sprite.clearTint()
+                  })
                   didParry = true
                 }
                 this.dealDamage(partyMemberToTarget, cachedXPos, didParry)
@@ -68,6 +72,7 @@ export class EnemyCharge extends Move {
   }
 
   tweenBack(cachedXPos: number) {
+    this.scene.player.actionState = ActionState.WAITING_FOR_TURN
     const tweenBack = this.scene.tweens.add({
       targets: [this.member.sprite],
       x: {

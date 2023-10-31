@@ -3,6 +3,7 @@ export enum SaveKeys {
   CURR_LEVEL = 'CURR_LEVEL',
   CURR_PARTY = 'CURR_PARTY',
   ACTIVE_ALLY = 'ACTIVE_ALLY',
+  FEVER_DEGREES = 'FEVER_DEGREES',
 }
 
 export class Save {

@@ -456,9 +456,7 @@ export class Player {
         if (!this.parryCooldown) {
           this.parryCooldown = true
           this.isParrying = true
-          this.livingParty[0].sprite.setTint(0x0000ff)
           this.scene.time.delayedCall(150, () => {
-            this.livingParty[0].sprite.clearTint()
             this.isParrying = false
           })
           this.parryCooldownTimerEvent = this.scene.time.delayedCall(500, () => {

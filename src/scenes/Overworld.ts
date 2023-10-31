@@ -30,6 +30,7 @@ export default class Overworld extends Phaser.Scene {
       Save.setData(SaveKeys.CURR_PARTY, ['Jambo'])
       Save.setData(SaveKeys.CURR_EXP, 0)
       Save.setData(SaveKeys.CURR_LEVEL, 1)
+      Save.setData(SaveKeys.FEVER_DEGREES, 100)
     }
   }
 
