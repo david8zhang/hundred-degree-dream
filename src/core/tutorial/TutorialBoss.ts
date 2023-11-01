@@ -2,15 +2,20 @@ import { Tutorial } from '~/scenes/Tutorial'
 import { TutorialScene } from './TutorialScene'
 import { NIGHTMARE_KING_HEAD } from '~/utils/EnemyConfigs'
 import { Constants, Side } from '~/utils/Constants'
+import { MoveNames } from '../moves/MoveNames'
 
 export class TutorialBoss extends TutorialScene {
   private static TUTORIAL_TEXT = [
     "Conch: What the...What's happening?",
     "Conch: Wait...it's him! The Nightmare King is here!",
     'Nightmare King: Bahahaha! You will never escape this nightmare realm!',
+    "Nightmare King: Let's heat things up, shall we?",
   ]
 
-  private static POST_FEVER_INCREASE_TEXT = ['Nightmare King: Now...Feel my power!']
+  private static POST_FEVER_INCREASE_TEXT = [
+    "Nightmare King: Ahh yes.. that's better. Nightmares thrive in high fever conditions...",
+    'Nightmare King: Now...Feel my power!',
+  ]
 
   private tutorialTextIndex = 0
   private currTextLines: string[] = []
@@ -25,6 +30,14 @@ export class TutorialBoss extends TutorialScene {
   }
 
   public start(): void {
+    this.tutorial.continueButtonText.setVisible(true)
+
+    const jambo = this.tutorial.player.party[0]
+    jambo.moveMapping = this.tutorial.convertMoveNamesToMoves(
+      [MoveNames.STOMP, MoveNames.PUNCH],
+      jambo
+    )
+
     this.tutorial.player.toggleDarkTheme(true)
     this.feverBg = this.tutorial.add
       .rectangle(
@@ -145,23 +158,23 @@ export class TutorialBoss extends TutorialScene {
   }
 
   public onContinuePressed(): void {
-    if (this.didFeverIncrease) {
-      this.tutorial.continueButtonText.setVisible(false)
-      this.tutorial.startTurn(Side.CPU)
-      this.tutorial.cpu.useNormalMoveCompleteBehavior = true
-      this.tutorial.player.useNormalMoveCompleteBehavior = true
-    } else {
-      if (this.tutorialTextIndex == this.currTextLines.length - 1) {
+    if (this.tutorialTextIndex == this.currTextLines.length - 1) {
+      if (this.didFeverIncrease) {
+        this.tutorial.continueButtonText.setVisible(false)
+        this.tutorial.startTurn(Side.CPU)
+        this.tutorial.cpu.useNormalMoveCompleteBehavior = true
+        this.tutorial.player.useNormalMoveCompleteBehavior = true
+      } else {
         this.tutorial.continueButtonText.setVisible(false)
         this.increaseFeverDegrees()
-      } else {
-        this.tutorialTextIndex++
-        if (this.tutorialTextIndex == 1) {
-          this.tutorial.cpu.generateNightmareKing(NIGHTMARE_KING_HEAD)
-        }
-        const tutorialTextLine = this.currTextLines[this.tutorialTextIndex]
-        this.tutorial.tutorialText.setText(tutorialTextLine)
       }
+    } else {
+      this.tutorialTextIndex++
+      if (this.tutorialTextIndex == 1 && !this.didFeverIncrease) {
+        this.tutorial.cpu.generateNightmareKing(NIGHTMARE_KING_HEAD)
+      }
+      const tutorialTextLine = this.currTextLines[this.tutorialTextIndex]
+      this.tutorial.tutorialText.setText(tutorialTextLine)
     }
   }
 }

@@ -10,7 +10,7 @@ export class TutorialGuard extends TutorialScene {
 
   public static TUTORIAL_TEXT_FAILURE = [
     'Conch: Not quite! Try guarding again.',
-    'Conch: Remember to press "R" right after the enemy charges forward to attack',
+    'Conch: Remember to press "R" right when the enemy charges forward to attack',
   ]
 
   public static TUTORIAL_TEXT_SUCCESS = ['Conch: Nicely done! Now give him a good wallop.']

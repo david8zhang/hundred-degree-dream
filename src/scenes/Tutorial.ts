@@ -39,14 +39,15 @@ export class Tutorial extends Phaser.Scene {
   public enemiesDefeated: EnemyConfig[] = []
   public waveNumber: number = 1
   public bgImage!: Phaser.GameObjects.Image
+  public isTutorial: boolean = true
 
   constructor() {
     super('tutorial')
     this.tutorialScenes = [
-      // new TutorialIntro(this),
-      // new TutorialGuard(this),
-      // new TutorialDefend(this),
-      // new TutorialStomp(this),
+      new TutorialIntro(this),
+      new TutorialGuard(this),
+      new TutorialDefend(this),
+      new TutorialStomp(this),
       new TutorialBoss(this),
       new TutorialOverworld(this),
     ]

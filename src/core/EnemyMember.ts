@@ -66,15 +66,15 @@ export class EnemyMember {
         color: this.isBoss ? 'white' : 'black',
       })
       .setOrigin(0.5, 1)
-  }
 
-  get x() {
-    const xPos = this.isBoss ? Constants.WINDOW_WIDTH - 250 : this.sprite.x
-    return xPos
-  }
-
-  get y() {
-    return this.sprite.y
+    if (this.isBoss) {
+      const scaleX = config.enemyConfig.body ? config.enemyConfig.body.width : 1
+      const scaleY = config.enemyConfig.body ? config.enemyConfig.body.height : 1
+      this.sprite.body.setSize(
+        this.sprite.displayWidth * scaleX,
+        this.sprite.displayHeight * scaleY
+      )
+    }
   }
 
   setVisible(isVisible: boolean): void {
@@ -116,14 +116,20 @@ export class EnemyMember {
         },
       })
     }
+
+    const xPos = this.isBoss ? Constants.BOSS_HIT_BOX.x : this.sprite.x
+    const yPos = this.isBoss
+      ? Constants.BOSS_HIT_BOX.y
+      : this.sprite.y - this.sprite.displayHeight / 2
+
     this.healthbar.setCurrValue(this.currHealth)
     this.healthText.setText(`${this.currHealth}`)
     UINumber.createNumber(
       `-${damage}`,
       this.scene,
-      this.sprite.x,
-      this.sprite.y - this.sprite.displayHeight / 2,
-      'black',
+      xPos,
+      yPos,
+      this.isBoss ? 'white' : 'black',
       '30px'
     )
   }

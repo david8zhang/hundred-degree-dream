@@ -5,6 +5,10 @@ export interface EnemyConfig {
   spriteTexture: string
   moveNames: MoveNames[]
   baseExpReward: number
+  body?: {
+    width: number
+    height: number
+  }
 }
 
 export const BARNACLE = {
@@ -47,6 +51,10 @@ export const NIGHTMARE_KING_ARM = {
   spriteTexture: 'boss-arm',
   moveNames: [MoveNames.NIGHTMARE_PUNCH],
   baseExpReward: 100,
+  body: {
+    width: 0.9,
+    height: 0.5,
+  },
 }
 
 export const NIGHTMARE_KING_LEG = {
@@ -54,6 +62,10 @@ export const NIGHTMARE_KING_LEG = {
   spriteTexture: 'boss-foot',
   moveNames: [MoveNames.NIGHTMARE_SLAM],
   baseExpReward: 100,
+  body: {
+    width: 0.9,
+    height: 0.9,
+  },
 }
 
 export const NIGHTMARE_KING_HEAD = {
@@ -61,8 +73,12 @@ export const NIGHTMARE_KING_HEAD = {
   spriteTexture: 'boss-head',
   moveNames: [MoveNames.NIGHTMARE_LASER],
   baseExpReward: 150,
+  body: {
+    width: 0.9,
+    height: 0.9,
+  },
 }
 
 export const ALL_ENEMY_CONFIGS = [BARNACLE, GREEN_FISH, SNAIL, SPIDER, BLUE_SLIME]
-export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_ARM]
+export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_LEG]
 // export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_HEAD, NIGHTMARE_KING_ARM, NIGHTMARE_KING_LEG]

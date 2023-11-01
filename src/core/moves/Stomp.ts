@@ -19,7 +19,7 @@ export class Stomp extends Move {
       targetType: TargetType.MULTI,
       member,
       description: 'Stomp on all enemies like a video game character',
-      instructions: 'Press "F" key just before stomping on an enemy!',
+      instructions: 'Press "F" key just before stomping on an enemy to deal extra damage',
     })
     this.setupKeyListener()
   }
@@ -37,6 +37,8 @@ export class Stomp extends Move {
   }
 
   public execute(movePayload?: MovePayload | undefined): void {
+    const partyMember = this.member as PartyMember
+    this.instructionText!.setVisible(true).setColor(partyMember.darkTheme ? 'white' : 'black')
     this.isExecuting = true
     const enemyList = this.scene.getEnemies()
     this.cachedPosition = {
@@ -60,35 +62,11 @@ export class Stomp extends Move {
       ease: Phaser.Math.Easing.Sine.InOut,
       duration: 1000,
       onComplete: () => {
+        this.instructionText!.setVisible(false)
         this.isExecuting = false
         tweenBack.remove()
         this.onMoveCompleted()
       },
-    })
-  }
-
-  stumble() {
-    this.scene.time.delayedCall(150, () => {
-      const partyMember = this.member as PartyMember
-      partyMember.sprite.setVelocity(0)
-      partyMember.sprite.setGravity(0)
-      const tweenBack = this.scene.tweens.add({
-        targets: [partyMember.sprite],
-        x: {
-          from: partyMember.sprite.x,
-          to: this.cachedPosition.x,
-        },
-        y: {
-          from: partyMember.sprite.y,
-          to: this.cachedPosition.y,
-        },
-        ease: Phaser.Math.Easing.Sine.InOut,
-        duration: 1000,
-        onComplete: () => {
-          tweenBack.remove()
-          this.onMoveCompleted()
-        },
-      })
     })
   }
 
@@ -110,11 +88,17 @@ export class Stomp extends Move {
       )
     } else {
       const enemyToStompOn = enemyList[index]
+
+      const xPos = enemyToStompOn.isBoss
+        ? Constants.BOSS_HIT_BOX.x
+        : enemyToStompOn.sprite.x + enemyToStompOn.sprite.displayWidth / 2
+      const yPos = enemyToStompOn.isBoss ? Constants.BOSS_HIT_BOX.y - 30 : enemyToStompOn.sprite.y
+
       Constants.createArc(
         partyMember.sprite,
         {
-          x: enemyToStompOn.sprite.x + enemyToStompOn.sprite.displayWidth / 2,
-          y: enemyToStompOn.sprite.y,
+          x: xPos,
+          y: yPos,
         },
         index == 0 ? 1.4 : 1.25
       )
@@ -126,15 +110,16 @@ export class Stomp extends Move {
         const baseDamage = this.isPressingKey ? Stomp.DAMAGE * 2 : Stomp.DAMAGE
         const damage = Constants.calculateDamageBasedOnLevel(baseDamage, level)
         stompedEnemy.takeDamage(damage)
-
-        const partyMember = this.member as PartyMember
-
         if (this.isPressingKey) {
+          const xPos = stompedEnemy.isBoss ? Constants.BOSS_HIT_BOX.x : stompedEnemy.sprite.x
+          const yPos = stompedEnemy.isBoss
+            ? Constants.BOSS_HIT_BOX.y - 30
+            : stompedEnemy.sprite.y - stompedEnemy.sprite.displayHeight - 30
           UINumber.createNumber(
             'Great!',
             this.scene,
-            stompedEnemy.sprite.x,
-            stompedEnemy.sprite.y - stompedEnemy.sprite.displayHeight - 30,
+            xPos,
+            yPos,
             partyMember.darkTheme ? 'white' : 'black',
             '30px'
           )

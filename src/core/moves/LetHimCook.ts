@@ -36,13 +36,14 @@ export class LetHimCook extends Move {
       onMoveCompleted: () => scene.onMoveCompleted(),
       member,
       description: 'Cook up a delicious meal to restore some HP for your ally',
-      instructions: 'Press the keys in the seqeuence shown!',
+      instructions: 'Press the keys in the seqeuence shown',
     })
     this.setupKeyListener()
     this.keyIcons = this.scene.add.group()
   }
 
   setupKeyListener() {
+    const partyMember = this.member as PartyMember
     this.scene.input.keyboard.on('keydown', (e) => {
       if (this.newSequenceGenerated && this.sequenceIndex < this.keyIcons.children.entries.length) {
         if (LetHimCook.KEY_CODES_IN_SEQUENCE.includes(e.keyCode)) {
@@ -58,7 +59,7 @@ export class LetHimCook extends Move {
               this.scene,
               keyCodeIcon.x,
               keyCodeIcon.y - keyCodeIcon.displayHeight / 2,
-              'black',
+              partyMember.darkTheme ? 'white' : 'black',
               '20px'
             )
             if (this.sequenceIndex === this.keyIcons.children.entries.length) {
@@ -103,6 +104,7 @@ export class LetHimCook extends Move {
   }
 
   resetMoveState() {
+    this.instructionText!.setVisible(false)
     this.keyIcons.clear(true, true)
     this.sequenceIndex = 0
     this.isExecuting = false
@@ -127,6 +129,8 @@ export class LetHimCook extends Move {
   }
 
   public execute(movePayload?: MovePayload | undefined): void {
+    const partyMember = this.member as PartyMember
+    this.instructionText!.setVisible(true).setColor(partyMember.darkTheme ? 'white' : 'black')
     this.isExecuting = true
     this.generateRandomSequence()
   }

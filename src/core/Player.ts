@@ -57,6 +57,7 @@ export class Player {
   private parryCooldown: boolean = false
   private parryCooldownTimerEvent: Phaser.Time.TimerEvent | null = null
 
+  // Random boolean flags
   private darkTheme: boolean = false
 
   constructor(scene: Dream, config: PlayerConfig) {
@@ -543,6 +544,7 @@ export class Player {
         isActive: false,
         player: this,
       })
+      allyToSwitchIn.toggleDarkTheme(this.darkTheme)
     }
     this.subbedPartyMembers.push(currAlly)
     this.scene.tweens.add({

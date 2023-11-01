@@ -25,7 +25,8 @@ export class RainingThrees extends Move {
       member,
       onMoveCompleted: () => scene.onMoveCompleted(),
       targetType: TargetType.AREA,
-      description: '',
+      description: 'Jack up some three point shots at multiple enemies',
+      instructions: 'Press "F" to launch a three point shot at the enemy',
     })
     this.graphics = this.scene.add.graphics()
     this.graphics.setDepth(2000)
@@ -44,6 +45,7 @@ export class RainingThrees extends Move {
   }
 
   resetMoveState() {
+    this.instructionText!.setVisible(false)
     this.collidersToCleanUp.forEach((obj) => {
       if (obj.active) {
         obj.destroy()
@@ -61,16 +63,20 @@ export class RainingThrees extends Move {
   }
 
   shootBasketball() {
+    const partyMember = this.member as PartyMember
     this.currNumBalls--
     const crosshairX = this.crosshair.x
     const crosshairY = this.crosshair.y
     const crosshairAfterImage = this.scene.add
       .sprite(crosshairX, crosshairY, 'crosshair')
       .setAlpha(0.5)
+      .setTintFill(partyMember.darkTheme ? 0xffffff : 0x000000)
 
     const newBasketball = this.scene.physics.add
       .sprite(this.member.sprite.x, this.member.sprite.y, 'basketball')
       .setGravityY(980)
+      .setDepth(2000)
+
     const angle = Phaser.Math.Angle.Between(
       this.member.sprite.x,
       this.member.sprite.y,
@@ -79,8 +85,6 @@ export class RainingThrees extends Move {
     )
     this.scene.physics.velocityFromRotation(angle, 850, newBasketball.body.velocity)
     const enemiesCollided = new Set()
-
-    const partyMember = this.member as PartyMember
 
     const overlap = this.scene.physics.add.overlap(
       newBasketball,
@@ -92,18 +96,20 @@ export class RainingThrees extends Move {
           const level = Save.getData(SaveKeys.CURR_LEVEL) as number
           enemy.takeDamage(Constants.calculateDamageBasedOnLevel(RainingThrees.DAMAGE, level))
           const randomFlavorText = Phaser.Utils.Array.GetRandom(RainingThrees.HIT_FLAVOR_TEXT)
+
+          const xPos = enemy.isBoss ? Constants.BOSS_HIT_BOX.x : enemy.sprite.x
+          const yPos = enemy.isBoss
+            ? Constants.BOSS_HIT_BOX.y - 30
+            : enemy.sprite.y - enemy.sprite.displayHeight - 30
+
           UINumber.createNumber(
             randomFlavorText,
             this.scene,
-            enemy.sprite.x,
-            enemy.sprite.y - enemy.sprite.displayHeight - 30,
+            xPos,
+            yPos,
             partyMember.darkTheme ? 'white' : 'black',
             '30px'
           )
-
-          this.scene.time.delayedCall(500, () => {
-            newBasketball.destroy()
-          })
         }
       }
     )
@@ -121,6 +127,8 @@ export class RainingThrees extends Move {
   }
 
   public execute(): void {
+    const partyMember = this.member as PartyMember
+    this.instructionText!.setVisible(true).setColor(partyMember.darkTheme ? 'white' : 'black')
     this.isExecuting = true
     // Tween the crosshair
     this.crosshairPath.x = this.member.sprite.x
@@ -132,7 +140,6 @@ export class RainingThrees extends Move {
       startPoint.y,
       'crosshair'
     )
-    const partyMember = this.member as PartyMember
     this.crosshair.setTintFill(partyMember.darkTheme ? 0xffffff : 0x000000)
     this.crosshair.setDepth(2000)
     this.crosshair.startFollow({

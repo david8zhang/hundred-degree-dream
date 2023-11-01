@@ -34,7 +34,7 @@ export class Punch extends Move {
       targetType: TargetType.SINGLE,
       member,
       description: 'Slug a single enemy in the face',
-      instructions: 'Hold the "F" key until the green circle lights up',
+      instructions: 'Hold the "F" key and release once the green circle appears!',
     })
     this.circleGroup = this.scene.add.group()
     this.circleGroup.setDepth(2000)
@@ -110,11 +110,21 @@ export class Punch extends Move {
       onComplete: () => {
         attackTween.remove()
         this.enemyToTarget!.takeDamage(damage)
+
+        // Change where the damage number appears since boss is larger than regular enemy
+        const xPos = this.enemyToTarget!.isBoss
+          ? Constants.BOSS_HIT_BOX.x
+          : this.enemyToTarget!.sprite.x
+
+        const yPos = this.enemyToTarget!.isBoss
+          ? Constants.BOSS_HIT_BOX.y - 30
+          : this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30
+
         UINumber.createNumber(
           `${timingType}`,
           this.scene,
-          this.enemyToTarget!.sprite.x,
-          this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
+          xPos,
+          yPos,
           this.enemyToTarget!.isBoss ? 'white' : 'black',
           '30px',
           () => {
@@ -139,6 +149,7 @@ export class Punch extends Move {
   }
 
   resetMoveState() {
+    this.instructionText!.setVisible(false)
     this.isExecuting = false
     this.highlightedCircleIndex = 0
     this.timingType = TimingType.OK
@@ -168,6 +179,8 @@ export class Punch extends Move {
   }
 
   public execute(movePayload: MovePayload): void {
+    const partyMember = this.member as PartyMember
+    this.instructionText!.setVisible(true).setColor(partyMember.darkTheme ? 'white' : 'black')
     const targets = movePayload.targets
     this.enemyToTarget = targets[0] as EnemyMember
     this.cachedInitialXPos = this.member.sprite.x

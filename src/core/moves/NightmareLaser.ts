@@ -23,6 +23,7 @@ export class NightmareLaser extends Move {
       .rectangle(0, 0, Constants.WINDOW_WIDTH, 0, 0xa537fd)
       .setAlpha(0.5)
       .setVisible(false)
+      .setDepth(5000)
 
     this.laserChargeSprite = this.scene.add
       .arc(0, 0, 200)

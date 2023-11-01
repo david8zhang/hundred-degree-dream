@@ -28,6 +28,20 @@ export class Constants {
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2
 
+  public static BOSS_HIT_BOX = {
+    x: Constants.WINDOW_WIDTH - 100,
+    y: Constants.WINDOW_HEIGHT / 2 - 100,
+  }
+
+  public static INSTRUCTION_TEXT_LOCATION = {
+    x: Constants.WINDOW_WIDTH / 2,
+    y: Constants.WINDOW_HEIGHT * 0.9,
+  }
+
+  public static INSTRUCTION_TEXT_LOCATION_TUTORIAL = {
+    y: Constants.WINDOW_HEIGHT * 0.25,
+  }
+
   public static CHARACTER_CONFIGS = {
     Jambo: {
       name: 'Jambo',

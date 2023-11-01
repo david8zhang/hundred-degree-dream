@@ -28,7 +28,7 @@ export class Maul extends Move {
     this.bar = new UIValueBar(this.scene, {
       maxValue: Maul.MAX_BAR_VALUE,
       x: Constants.WINDOW_WIDTH / 2 - 125,
-      y: Constants.WINDOW_HEIGHT - 65,
+      y: Constants.WINDOW_HEIGHT * 0.75,
       width: 250,
       height: 20,
       borderWidth: 0,
@@ -68,6 +68,7 @@ export class Maul extends Move {
   }
 
   resetMoveState() {
+    this.instructionText!.setVisible(false)
     this.isAttacking = false
     this.isExecuting = false
     this.bar.setCurrValue(0)
@@ -116,6 +117,8 @@ export class Maul extends Move {
   }
 
   public execute(movePayload: MovePayload): void {
+    const partyMember = this.member as PartyMember
+    this.instructionText!.setVisible(true).setColor(partyMember.darkTheme ? 'white' : 'black')
     this.isExecuting = true
     this.cachedXPos = this.member.sprite.x
     const enemyToTarget = movePayload.targets[0] as EnemyMember

@@ -1,5 +1,6 @@
 import { Dream } from '~/scenes/Dream'
 import { TargetType } from './moves/Move'
+import { Constants } from '~/utils/Constants'
 
 export class TargetCursor {
   private scene: Dream
@@ -40,25 +41,23 @@ export class TargetCursor {
     switch (targetType) {
       case TargetType.SINGLE: {
         const enemyToTarget = enemies[this.enemyToTargetIndex]
-        const newCursor = this.scene.add
-          .sprite(
-            enemyToTarget.sprite.x,
-            enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30,
-            'cursor'
-          )
-          .setDisplaySize(32, 32)
+        const xPos = enemyToTarget.isBoss ? Constants.BOSS_HIT_BOX.x : enemyToTarget.sprite.x
+        const yPos = enemyToTarget.isBoss
+          ? Constants.BOSS_HIT_BOX.y - 30
+          : enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30
+
+        const newCursor = this.scene.add.sprite(xPos, yPos, 'cursor').setDisplaySize(32, 32)
         this.cursorGroup.add(newCursor)
         break
       }
       case TargetType.MULTI: {
         enemies.forEach((enemyToTarget) => {
-          const newCursor = this.scene.add
-            .sprite(
-              enemyToTarget.sprite.x,
-              enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30,
-              'cursor'
-            )
-            .setDisplaySize(32, 32)
+          const xPos = enemyToTarget.isBoss ? Constants.BOSS_HIT_BOX.x : enemyToTarget.sprite.x
+          const yPos = enemyToTarget.isBoss
+            ? Constants.BOSS_HIT_BOX.y - 30
+            : enemyToTarget.sprite.y - enemyToTarget.sprite.displayHeight / 2 - 30
+
+          const newCursor = this.scene.add.sprite(xPos, yPos, 'cursor').setDisplaySize(32, 32)
           this.cursorGroup.add(newCursor)
         })
         break
