@@ -99,4 +99,8 @@ export class Constants {
     sprite.setVelocity(xVelocity, yVelocity)
     sprite.setGravityY(980)
   }
+
+  public static calculateDamageBasedOnLevel(damage: number, level: number) {
+    return Math.round(damage + (level - 1) * 0.25)
+  }
 }

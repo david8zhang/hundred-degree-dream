@@ -26,13 +26,13 @@ export class Player {
   private scene: Dream
   public party: PartyMember[] = []
   private partyMemberToActIndex: number = 0
-  private partyMemberHealthInfo: HealthInfo[] = []
+  protected partyMemberHealthInfo: HealthInfo[] = []
 
   // Actions (Fight, Tactics, Items)
-  private fightActionText!: Phaser.GameObjects.Text
-  private tacticsActionText!: Phaser.GameObjects.Text
+  public fightActionText!: Phaser.GameObjects.Text
+  public tacticsActionText!: Phaser.GameObjects.Text
   private actions: Phaser.GameObjects.Text[] = []
-  private selectedActionIndex: number = 0
+  public selectedActionIndex: number = 0
   public actionState: ActionState = ActionState.PICK_ACTION
 
   // Moves (Attacks)
@@ -92,12 +92,14 @@ export class Player {
         color: 'black',
       })
       .setVisible(false)
+      .setOrigin(0.5, 0.5)
     this.tacticsActionText = this.scene.add
       .text(0, 0, 'Tactics', {
         fontSize: '25px',
         color: 'black',
       })
       .setVisible(false)
+      .setOrigin(0.5, 0.5)
     this.actions.push(this.fightActionText)
     this.actions.push(this.tacticsActionText)
   }
@@ -183,18 +185,17 @@ export class Player {
 
   displayTacticsMenu() {
     this.defendText
-      .setPosition(
-        this.partyMemberToAct.sprite.x + this.partyMemberToAct.sprite.displayWidth / 2,
-        this.partyMemberToAct.sprite.y - this.partyMemberToAct.sprite.displayHeight / 2
-      )
+      .setPosition(Constants.WINDOW_WIDTH / 2 - 50, Constants.WINDOW_HEIGHT / 3)
       .setVisible(true)
+      .setOrigin(0, 0.5)
     if (this.switchAllyText) {
       this.switchAllyText
         .setPosition(
-          this.partyMemberToAct.sprite.x + this.partyMemberToAct.sprite.displayWidth / 2,
+          Constants.WINDOW_WIDTH / 2 - 50,
           this.defendText.y + this.defendText.displayHeight + 15
         )
         .setVisible(true)
+        .setOrigin(0, 0.5)
     }
   }
 
@@ -202,16 +203,18 @@ export class Player {
     const partyMemberSprite = this.partyMemberToAct.sprite
     this.fightActionText
       .setPosition(
-        partyMemberSprite.x - this.fightActionText.displayWidth - 15,
+        partyMemberSprite.x - 60,
         partyMemberSprite.y - partyMemberSprite.displayHeight / 2 - 30
       )
       .setVisible(true)
+      .setOrigin(0.5, 0.5)
     this.tacticsActionText
       .setPosition(
-        partyMemberSprite.x + 15,
+        partyMemberSprite.x + 60,
         partyMemberSprite.y - partyMemberSprite.displayHeight / 2 - 30
       )
       .setVisible(true)
+      .setOrigin(0.5, 0.5)
   }
 
   scrollActions(scrollAmt: number) {
@@ -237,11 +240,12 @@ export class Player {
     const moveNames = this.partyMemberToAct.getAllMoveNames()
     moveNames.forEach((name) => {
       const moveNameText = this.scene.add
-        .text(Constants.WINDOW_WIDTH / 2, yPos, name, {
+        .text(Constants.WINDOW_WIDTH / 2 - 50, yPos, name, {
           fontSize: '25px',
           color: 'black',
         })
         .setDepth(1000)
+        .setOrigin(0, 0.5)
       moveNameText.setData('ref', this.partyMemberToAct.moveMapping[name])
       this.movesMenu.add(moveNameText)
       yPos += moveNameText.displayHeight + 15
@@ -339,7 +343,7 @@ export class Player {
     const allies = partyMembers.filter((p) => !currParty.includes(p))
     this.allyList.displayOptions({
       position: {
-        x: Constants.WINDOW_WIDTH / 2,
+        x: Constants.WINDOW_WIDTH / 2 - 50,
         y: Constants.WINDOW_HEIGHT / 3,
       },
       options: allies,
@@ -557,6 +561,12 @@ export class Player {
         this.actionState = ActionState.PICK_ACTION
         this.hideTactics()
         this.showActions()
+        break
+      }
+      case ActionState.PICK_ALLY_TO_SWITCH: {
+        this.actionState = ActionState.PICK_TACTIC
+        this.allyList.hide()
+        this.displayTacticsMenu()
         break
       }
     }

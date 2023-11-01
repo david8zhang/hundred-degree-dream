@@ -49,6 +49,10 @@ export class PartyMember {
       .setVisible(false)
   }
 
+  setVisible(isVisible: boolean): void {
+    this.sprite.setVisible(isVisible)
+  }
+
   heal(amount: number) {
     this.currHealth = Math.min(this.maxHealth, this.currHealth + amount)
     this.player.updateHealth()

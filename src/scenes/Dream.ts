@@ -15,6 +15,9 @@ import { LetHimCook } from '~/core/moves/LetHimCook'
 import { RainingThrees } from '~/core/moves/RainingThrees'
 import { Maul } from '~/core/moves/Maul'
 import { EnemyMulti } from '~/core/moves/EnemyMulti'
+import { NightmareSlam } from '~/core/moves/NightmareSlam'
+import { NightmarePunch } from '~/core/moves/NightmarePunch'
+import { NightmareLaser } from '~/core/moves/NightmareLaser'
 
 export class Dream extends Phaser.Scene {
   public player!: Player
@@ -36,11 +39,6 @@ export class Dream extends Phaser.Scene {
     })
   }
 
-  calculateDamageBasedOnLevel(damage: number) {
-    const level = Save.getData(SaveKeys.CURR_LEVEL)
-    return Math.round(damage + (level - 1) * 0.25)
-  }
-
   getCharacterConfigs() {
     const activeAlly = Save.getData(SaveKeys.ACTIVE_ALLY) as string
     const allCharacters = [Constants.CHARACTER_CONFIGS['Jambo']]
@@ -51,6 +49,7 @@ export class Dream extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.setBackgroundColor(0xffffff)
     this.add
       .image(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'background')
       .setOrigin(0.5, 0.5)
@@ -59,8 +58,16 @@ export class Dream extends Phaser.Scene {
       characterConfigs,
     })
     this.cpu = new CPU(this)
-    this.cpu.generateEnemies()
-    this.player.startTurn()
+
+    // Once the fever reaches 1000 degrees, a piece of the Nightmare King appears
+    const feverDegree = Save.getData(SaveKeys.FEVER_DEGREES) as number
+    if (feverDegree === 1000) {
+      this.cpu.generateNightmareKing()
+    } else {
+      this.cpu.generateEnemies()
+    }
+
+    this.startTurn(Side.PLAYER)
     this.waveCompleteText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT * 0.25, 'Wave Complete!', {
         fontSize: '40px',
@@ -111,6 +118,18 @@ export class Dream extends Phaser.Scene {
         }
         case MoveNames.ENEMY_MULTI: {
           moveMapping[moveName] = new EnemyMulti(this, member)
+          break
+        }
+        case MoveNames.NIGHTMARE_SLAM: {
+          moveMapping[moveName] = new NightmareSlam(this, member)
+          break
+        }
+        case MoveNames.NIGHTMARE_PUNCH: {
+          moveMapping[moveName] = new NightmarePunch(this, member)
+          break
+        }
+        case MoveNames.NIGHTMARE_LASER: {
+          moveMapping[moveName] = new NightmareLaser(this, member)
           break
         }
       }

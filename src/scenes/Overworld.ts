@@ -24,16 +24,6 @@ export default class Overworld extends Phaser.Scene {
     super('overworld')
   }
 
-  initializeSaveState() {
-    if (Save.getData(SaveKeys.CURR_EXP) == undefined) {
-      Save.getData(SaveKeys.ACTIVE_ALLY, '')
-      Save.setData(SaveKeys.CURR_PARTY, ['Jambo'])
-      Save.setData(SaveKeys.CURR_EXP, 0)
-      Save.setData(SaveKeys.CURR_LEVEL, 1)
-      Save.setData(SaveKeys.FEVER_DEGREES, 100)
-    }
-  }
-
   handleRecruitAlly() {
     const currParty = Save.getData(SaveKeys.CURR_PARTY) as string[]
     if (this.tvChannelSelected == TVChannels.SPORTS && !currParty.includes('Athlete')) {
@@ -126,8 +116,8 @@ export default class Overworld extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.setBackgroundColor(0x000000)
     this.overworldState = OverworldState.CHOOSING_ACTIVITY
-    this.initializeSaveState()
     this.goToSleepText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'Go to sleep', {
         fontSize: '25px',

@@ -5,6 +5,7 @@ import { PartyMember } from '../PartyMember'
 import { MoveNames } from './MoveNames'
 import { Constants } from '~/utils/Constants'
 import { UINumber } from '../UINumber'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export class Stomp extends Move {
   private cachedPosition!: { x: number; y: number }
@@ -119,11 +120,14 @@ export class Stomp extends Move {
       )
     }
     this.scene.time.delayedCall(index == 0 ? 1300 : 1100, () => {
-      if (this.isPressingKey || index + 1 > enemyList.length) {
-        if (index < enemyList.length) {
-          const stompedEnemy = enemyList[index]
-          const damage = this.scene.calculateDamageBasedOnLevel(Stomp.DAMAGE)
-          stompedEnemy.takeDamage(damage)
+      if (index < enemyList.length) {
+        const stompedEnemy = enemyList[index]
+        const level = Save.getData(SaveKeys.CURR_LEVEL) as number
+        const baseDamage = this.isPressingKey ? Stomp.DAMAGE * 2 : Stomp.DAMAGE
+        const damage = Constants.calculateDamageBasedOnLevel(baseDamage, level)
+        stompedEnemy.takeDamage(damage)
+
+        if (this.isPressingKey) {
           UINumber.createNumber(
             'Great!',
             this.scene,
@@ -133,10 +137,8 @@ export class Stomp extends Move {
             '30px'
           )
         }
-        this.stompOnEnemy(enemyList, index + 1)
-      } else {
-        this.stumble()
       }
+      this.stompOnEnemy(enemyList, index + 1)
     })
   }
 }

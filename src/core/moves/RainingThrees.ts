@@ -4,6 +4,8 @@ import { EnemyMember } from '../EnemyMember'
 import { Dream } from '~/scenes/Dream'
 import { MoveNames } from './MoveNames'
 import { UINumber } from '../UINumber'
+import { Save, SaveKeys } from '~/utils/Save'
+import { Constants } from '~/utils/Constants'
 
 export class RainingThrees extends Move {
   private static MAX_NUM_BALLS = 3
@@ -85,7 +87,8 @@ export class RainingThrees extends Move {
         const enemy = obj2.getData('ref') as EnemyMember
         if (!enemiesCollided.has(enemy.id) && enemy.currHealth > 0) {
           enemiesCollided.add(enemy.id)
-          enemy.takeDamage(this.scene.calculateDamageBasedOnLevel(RainingThrees.DAMAGE))
+          const level = Save.getData(SaveKeys.CURR_LEVEL) as number
+          enemy.takeDamage(Constants.calculateDamageBasedOnLevel(RainingThrees.DAMAGE, level))
           const randomFlavorText = Phaser.Utils.Array.GetRandom(RainingThrees.HIT_FLAVOR_TEXT)
           UINumber.createNumber(
             randomFlavorText,

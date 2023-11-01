@@ -1,30 +1,51 @@
 import { Constants, Side } from '~/utils/Constants'
 import { Dream } from '~/scenes/Dream'
 import { EnemyMember } from './EnemyMember'
-import { ALL_ENEMY_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
+import { ALL_ENEMY_CONFIGS, ALL_NIGHTMARE_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
 import { Save, SaveKeys } from '~/utils/Save'
-import { ActionState } from './Player'
 
 export class CPU {
   public enemies: EnemyMember[] = []
   public enemyGroup: Phaser.Physics.Arcade.Group
-  private scene: Dream
-  private enemyToActIndex: number = 0
+  protected scene: Dream
+  public enemyToActIndex: number = 0
 
   constructor(scene: Dream) {
     this.scene = scene
     this.enemyGroup = this.scene.physics.add.group()
   }
 
-  generateEnemies() {
+  generateNightmareKing() {
+    this.clearPreviousEnemies()
+    let xPos = Constants.LEFTMOST_CPU_X_POS
+    const yPos = 400
+    this.enemyGroup.clear(true, true)
+    const nightmareKingConfig = Phaser.Utils.Array.GetRandom(ALL_NIGHTMARE_CONFIGS)
+    const nightmareKingEnemy = new EnemyMember(this.scene, {
+      position: {
+        x: xPos,
+        y: yPos,
+      },
+      enemyConfig: nightmareKingConfig,
+      id: `nightmare-king`,
+    })
+    this.enemies.push(nightmareKingEnemy)
+    this.enemyGroup.add(nightmareKingEnemy.sprite)
+  }
+
+  clearPreviousEnemies() {
     if (this.enemies.length > 0) {
       this.enemies.forEach((e) => e.destroy())
       this.enemies = []
     }
+    this.enemyGroup.clear(true, true)
+  }
+
+  generateEnemies(numEnemiesOverride: number = 1) {
+    this.clearPreviousEnemies()
     let xPos = Constants.LEFTMOST_CPU_X_POS
     const yPos = 400
-
-    let numEnemies = 1
+    let numEnemies = numEnemiesOverride
     if (this.scene.waveNumber >= 0 && this.scene.waveNumber < 3) {
       numEnemies = Phaser.Math.Between(1, 3)
     }
@@ -34,7 +55,6 @@ export class CPU {
     if (this.scene.waveNumber >= 5) {
       numEnemies = 3
     }
-
     for (let i = 0; i < numEnemies; i++) {
       const randomConfig = Phaser.Utils.Array.GetRandom(ALL_ENEMY_CONFIGS)
       const expReward = this.getExpReward(randomConfig)

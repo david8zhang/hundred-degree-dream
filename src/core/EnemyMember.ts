@@ -21,8 +21,8 @@ export class EnemyMember {
   public moveMapping: {
     [key: string]: Move
   }
-  private healthbar: UIValueBar
-  private healthText: Phaser.GameObjects.Text
+  public healthbar: UIValueBar
+  public healthText: Phaser.GameObjects.Text
   private enemyConfig: EnemyConfig
   public id: string = ''
   private isAlreadyDying: boolean = false
@@ -60,6 +60,14 @@ export class EnemyMember {
       .setOrigin(0.5, 1)
   }
 
+  updateHealthBarPosition() {
+    const healthbarWidth = 75
+    this.healthbar.x = this.sprite.x - healthbarWidth / 2
+    this.healthbar.y = this.sprite.y + this.sprite.displayHeight / 2 + 20
+    this.healthbar.draw()
+    this.healthText.setPosition(this.sprite.x, this.healthbar.y + 35)
+  }
+
   getMoveToExecute() {
     const keys = Object.keys(this.moveMapping)
     const randomKey = Phaser.Utils.Array.GetRandom(keys)
@@ -72,13 +80,13 @@ export class EnemyMember {
       this.isAlreadyDying = true
       this.scene.enemiesDefeated.push(this.enemyConfig)
       this.scene.tweens.add({
-        delay: 1500,
+        delay: 750,
         targets: [this.sprite],
         alpha: {
           from: 1,
           to: 0,
         },
-        duration: 1000,
+        duration: 500,
         onComplete: () => {
           this.healthbar.setVisible(false)
           this.healthText.setVisible(false)

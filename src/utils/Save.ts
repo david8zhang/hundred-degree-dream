@@ -28,6 +28,10 @@ export class Save {
     return Save._instance
   }
 
+  public static doesSaveExist() {
+    return localStorage.getItem(Save.LOCAL_STORAGE_KEY) != undefined
+  }
+
   public static clearSave() {
     localStorage.clear()
   }

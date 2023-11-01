@@ -35,6 +35,11 @@ export class HealthInfo {
     this.partyMember = config.partyMember
   }
 
+  setVisible(isVisible: boolean) {
+    this.icon.setVisible(isVisible)
+    this.text.setVisible(isVisible)
+  }
+
   get displayHeight() {
     return this.text.displayHeight
   }

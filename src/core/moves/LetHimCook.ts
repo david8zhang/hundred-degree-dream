@@ -106,11 +106,12 @@ export class LetHimCook extends Move {
   generateRandomSequence() {
     this.sequence = []
     let xPos = Constants.WINDOW_WIDTH / 2 - 120
+    const yPos = Constants.WINDOW_HEIGHT * 0.75
     for (let i = 1; i <= 5; i++) {
       const randomKeyCode = Phaser.Utils.Array.GetRandom(LetHimCook.KEY_CODES_IN_SEQUENCE)
       this.sequence.push(randomKeyCode)
       const keyIcon = this.scene.add
-        .sprite(xPos, Constants.WINDOW_HEIGHT - 50, LetHimCook.KEY_CODE_TO_SPRITE[randomKeyCode])
+        .sprite(xPos, yPos, LetHimCook.KEY_CODE_TO_SPRITE[randomKeyCode])
         .setOrigin(0.5, 1)
         .setDisplaySize(64, 64)
       this.keyIcons.add(keyIcon)

@@ -29,6 +29,7 @@ export class OptionsList {
           color: 'black',
         })
         .setDepth(1000)
+        .setOrigin(0, 0.5)
       yPos += optionText.displayHeight + 15
       this.optionsGroup.add(optionText)
     })

@@ -146,7 +146,7 @@ export class DreamEnd extends Phaser.Scene {
     const numRepeats = this.totalExpGained / expGainPerInc
     this.time.addEvent({
       delay: 25,
-      repeat: numRepeats - 1,
+      repeat: Math.max(numRepeats - 1, 0),
       callback: () => {
         this.expBar.setCurrValue(this.expBar.currValue + expGainPerInc)
         if (this.expBar.currValue >= 100) {
@@ -254,6 +254,8 @@ export class DreamEnd extends Phaser.Scene {
     this.feverDegreeText.setVisible(true)
     this.continueButton.setVisible(false)
     let currFeverDegrees = Save.getData(SaveKeys.FEVER_DEGREES) as number
+    currFeverDegrees = currFeverDegrees === 1000 ? 100 : currFeverDegrees
+
     this.feverDegreeValue.setText(`${currFeverDegrees}°`)
     this.time.addEvent({
       repeat: 99,
@@ -306,6 +308,7 @@ export class DreamEnd extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.setBackgroundColor(0x000000)
     this.continueButton = new Button({
       scene: this,
       width: 175,

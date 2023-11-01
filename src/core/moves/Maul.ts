@@ -4,6 +4,7 @@ import { PartyMember } from '../PartyMember'
 import { EnemyMember } from '../EnemyMember'
 import { UIValueBar } from '../UIValueBar'
 import { Constants } from '~/utils/Constants'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export class Maul extends Move {
   private static MAUL_DAMAGE = 1
@@ -93,7 +94,8 @@ export class Maul extends Move {
       yoyo: true,
       repeat: numRepeats,
       onYoyo: () => {
-        const damage = this.scene.calculateDamageBasedOnLevel(Maul.MAUL_DAMAGE)
+        const level = Save.getData(SaveKeys.CURR_LEVEL) as number
+        const damage = Constants.calculateDamageBasedOnLevel(Maul.MAUL_DAMAGE, level)
         enemyToTarget.takeDamage(damage)
       },
       onComplete: () => {

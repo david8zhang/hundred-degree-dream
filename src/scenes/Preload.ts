@@ -38,6 +38,6 @@ export class Preload extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start('overworld')
+    this.scene.start('start')
   }
 }

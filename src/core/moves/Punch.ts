@@ -5,6 +5,7 @@ import { EnemyMember } from '../EnemyMember'
 import { PartyMember } from '../PartyMember'
 import { Constants } from '~/utils/Constants'
 import { UINumber } from '../UINumber'
+import { Save, SaveKeys } from '~/utils/Save'
 
 export enum TimingType {
   OK = 'Ok',
@@ -22,8 +23,8 @@ export class Punch extends Move {
   private windUpTween: Phaser.Tweens.Tween | null = null
 
   private static TIMING_TO_DAMAGE_MAP = {
-    [TimingType.OK]: 1,
-    [TimingType.GREAT]: 2,
+    [TimingType.OK]: 2,
+    [TimingType.GREAT]: 3,
   }
 
   constructor(scene: Dream, member: PartyMember | EnemyMember) {
@@ -88,7 +89,11 @@ export class Punch extends Move {
   handleRelease() {
     this.circleGroup.setVisible(false)
     const timingType = this.timingType
-    const damage = this.scene.calculateDamageBasedOnLevel(Punch.TIMING_TO_DAMAGE_MAP[timingType])
+    const level = Save.getData(SaveKeys.CURR_LEVEL)
+    const damage = Constants.calculateDamageBasedOnLevel(
+      Punch.TIMING_TO_DAMAGE_MAP[timingType],
+      level
+    )
     if (this.windUpTween) {
       this.windUpTween.stop()
       this.windUpTween.remove()
@@ -144,7 +149,7 @@ export class Punch extends Move {
 
   showCircles() {
     let xPos = Constants.WINDOW_WIDTH / 2 - 50
-    const yPos = Constants.WINDOW_HEIGHT - 100
+    const yPos = Constants.WINDOW_HEIGHT * 0.75
     this.circleGroup.children.entries.forEach((obj: Phaser.GameObjects.GameObject) => {
       const circle = obj as Phaser.GameObjects.Arc
       circle.setPosition(xPos, yPos).setFillStyle(0x444444)
