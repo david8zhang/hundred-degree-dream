@@ -20,6 +20,7 @@ export class Preload extends Phaser.Scene {
     this.load.image('background', 'background.png')
     this.load.image('crosshair', 'crosshair.png')
     this.load.image('basketball', 'basketball.png')
+    this.load.image('nightmare-bg', 'nightmare-bg.jpg')
 
     // Enemies
     this.load.image('barnacle', 'enemies/barnacle.png')
@@ -27,6 +28,12 @@ export class Preload extends Phaser.Scene {
     this.load.image('slimeBlue', 'enemies/slimeBlue.png')
     this.load.image('spider', 'enemies/spider.png')
     this.load.image('snail', 'enemies/snail.png')
+
+    // Boss
+    this.load.image('boss-head', 'boss/boss-head.png')
+    this.load.image('boss-arm', 'boss/boss-arm.png')
+    this.load.image('boss-fist', 'boss/boss-fist.png')
+    this.load.image('boss-foot', 'boss/boss-foot.png')
 
     // Key prompts
     this.load.image('downKey', 'key-prompts/downKey.png')

@@ -15,12 +15,18 @@ export class CPU {
     this.enemyGroup = this.scene.physics.add.group()
   }
 
-  generateNightmareKing() {
+  generateNightmareKing(defaultConfig?: EnemyConfig) {
     this.clearPreviousEnemies()
-    let xPos = Constants.LEFTMOST_CPU_X_POS
-    const yPos = 400
-    this.enemyGroup.clear(true, true)
-    const nightmareKingConfig = Phaser.Utils.Array.GetRandom(ALL_NIGHTMARE_CONFIGS)
+    const nightmareKingConfig = defaultConfig
+      ? defaultConfig
+      : Phaser.Utils.Array.GetRandom(ALL_NIGHTMARE_CONFIGS)
+
+    const yPos = nightmareKingConfig.spriteTexture === 'boss-foot' ? 50 : 350
+    const xPos =
+      nightmareKingConfig.spriteTexture === 'boss-foot'
+        ? Constants.WINDOW_WIDTH * 0.75
+        : Constants.WINDOW_WIDTH
+
     const nightmareKingEnemy = new EnemyMember(this.scene, {
       position: {
         x: xPos,
@@ -28,6 +34,7 @@ export class CPU {
       },
       enemyConfig: nightmareKingConfig,
       id: `nightmare-king`,
+      isBoss: true,
     })
     this.enemies.push(nightmareKingEnemy)
     this.enemyGroup.add(nightmareKingEnemy.sprite)
@@ -71,6 +78,7 @@ export class CPU {
           baseExpReward: expReward,
         },
         id: `enemy-${i}`,
+        isBoss: false,
       })
       this.enemies.push(enemy)
       this.enemyGroup.add(enemy.sprite)

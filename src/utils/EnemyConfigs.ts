@@ -44,24 +44,25 @@ export const BLUE_SLIME = {
 
 export const NIGHTMARE_KING_ARM = {
   maxHealth: 50,
-  spriteTexture: '',
+  spriteTexture: 'boss-arm',
   moveNames: [MoveNames.NIGHTMARE_PUNCH],
   baseExpReward: 100,
 }
 
 export const NIGHTMARE_KING_LEG = {
   maxHealth: 50,
-  spriteTexture: '',
+  spriteTexture: 'boss-foot',
   moveNames: [MoveNames.NIGHTMARE_SLAM],
   baseExpReward: 100,
 }
 
 export const NIGHTMARE_KING_HEAD = {
   maxHealth: 75,
-  spriteTexture: '',
+  spriteTexture: 'boss-head',
   moveNames: [MoveNames.NIGHTMARE_LASER],
   baseExpReward: 150,
 }
 
 export const ALL_ENEMY_CONFIGS = [BARNACLE, GREEN_FISH, SNAIL, SPIDER, BLUE_SLIME]
-export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_HEAD]
+export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_ARM]
+// export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_HEAD, NIGHTMARE_KING_ARM, NIGHTMARE_KING_LEG]

@@ -26,6 +26,7 @@ export class TutorialOverworld extends TutorialScene {
   public start(): void {
     this.tutorial.cameras.main.setBackgroundColor(0x000000)
     this.tutorial.player.setVisible(false)
+    this.tutorial.cpu.setVisible(false)
     this.tutorial.tutorialText.setStyle({ color: 'white' })
     this.tutorial.continueButtonText.setStyle({ color: 'white' })
 

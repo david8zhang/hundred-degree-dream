@@ -18,6 +18,8 @@ import { TutorialGuard } from '~/core/tutorial/TutorialGuard'
 import { TutorialDefend } from '~/core/tutorial/TutorialDefend'
 import { TutorialStomp } from '~/core/tutorial/TutorialStomp'
 import { TutorialOverworld } from '~/core/tutorial/TutorialOverworld'
+import { TutorialBoss } from '~/core/tutorial/TutorialBoss'
+import { NightmareLaser } from '~/core/moves/NightmareLaser'
 
 export enum TutorialState {
   INTRO = 'INTRO',
@@ -41,10 +43,11 @@ export class Tutorial extends Phaser.Scene {
   constructor() {
     super('tutorial')
     this.tutorialScenes = [
-      new TutorialIntro(this),
-      new TutorialGuard(this),
-      new TutorialDefend(this),
-      new TutorialStomp(this),
+      // new TutorialIntro(this),
+      // new TutorialGuard(this),
+      // new TutorialDefend(this),
+      // new TutorialStomp(this),
+      new TutorialBoss(this),
       new TutorialOverworld(this),
     ]
   }
@@ -99,6 +102,10 @@ export class Tutorial extends Phaser.Scene {
         }
         case MoveNames.STOMP: {
           moveMapping[moveName] = new Stomp(this as unknown as Dream, member)
+          break
+        }
+        case MoveNames.NIGHTMARE_LASER: {
+          moveMapping[moveName] = new NightmareLaser(this as unknown as Dream, member)
           break
         }
       }

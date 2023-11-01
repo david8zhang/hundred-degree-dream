@@ -28,6 +28,7 @@ export class PartyMember {
   }
   public isActive: boolean = false
   public defendingText: Phaser.GameObjects.Text
+  public darkTheme: boolean = false
 
   constructor(scene: Dream, config: PartyMemberConfig) {
     this.scene = scene
@@ -47,6 +48,13 @@ export class PartyMember {
       })
       .setOrigin(0.5, 0.5)
       .setVisible(false)
+  }
+
+  toggleDarkTheme(darkTheme: boolean) {
+    this.darkTheme = darkTheme
+    this.defendingText.setStyle({
+      color: darkTheme ? 'white' : 'black',
+    })
   }
 
   setVisible(isVisible: boolean): void {

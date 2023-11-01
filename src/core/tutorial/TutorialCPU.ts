@@ -2,7 +2,7 @@ import { Dream } from '~/scenes/Dream'
 import { CPU } from '../CPU'
 import { EnemyMember } from '../EnemyMember'
 import { Constants } from '~/utils/Constants'
-import { BLUE_SLIME } from '~/utils/EnemyConfigs'
+import { BLUE_SLIME, EnemyConfig } from '~/utils/EnemyConfigs'
 
 export interface TutorialCPUConfig {
   onMoveCompleted: Function
@@ -15,6 +15,37 @@ export class TutorialCPU extends CPU {
   constructor(scene: Dream, config: TutorialCPUConfig) {
     super(scene)
     this.moveCompletedCb = config.onMoveCompleted
+  }
+
+  setVisible(isVisible: boolean) {
+    this.enemies.forEach((enemy) => enemy.setVisible(isVisible))
+  }
+
+  generateNightmareKing(defaultConfig: EnemyConfig) {
+    this.clearPreviousEnemies()
+    let xPos = Constants.WINDOW_WIDTH
+    const yPos = 375
+    const nightmareKingEnemy = new EnemyMember(this.scene, {
+      position: {
+        x: Constants.WINDOW_WIDTH * 2,
+        y: yPos,
+      },
+      enemyConfig: defaultConfig,
+      id: `nightmare-king`,
+      isBoss: true,
+    })
+    nightmareKingEnemy.sprite.setAlpha(0)
+    nightmareKingEnemy.sprite.setPosition(xPos, yPos)
+    this.enemies.push(nightmareKingEnemy)
+    this.enemyGroup.add(nightmareKingEnemy.sprite)
+    this.scene.tweens.add({
+      targets: [nightmareKingEnemy.sprite],
+      alpha: {
+        from: 0,
+        to: 1,
+      },
+      duration: 1000,
+    })
   }
 
   generateEnemies(numEnemies: number) {
@@ -33,6 +64,7 @@ export class TutorialCPU extends CPU {
           baseExpReward: 0,
         },
         id: `enemy-${i}`,
+        isBoss: false,
       })
       this.enemies.push(enemy)
       this.enemyGroup.add(enemy.sprite)

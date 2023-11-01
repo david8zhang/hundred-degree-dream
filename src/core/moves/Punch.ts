@@ -37,6 +37,7 @@ export class Punch extends Move {
       instructions: 'Hold the "F" key until the green circle lights up',
     })
     this.circleGroup = this.scene.add.group()
+    this.circleGroup.setDepth(2000)
     this.setupCircles()
     this.setupKeyListener()
   }
@@ -114,7 +115,7 @@ export class Punch extends Move {
           this.scene,
           this.enemyToTarget!.sprite.x,
           this.enemyToTarget!.sprite.y - this.enemyToTarget!.sprite.displayHeight / 2 - 30,
-          'black',
+          this.enemyToTarget!.isBoss ? 'white' : 'black',
           '30px',
           () => {
             // Have player return to original position
@@ -163,7 +164,7 @@ export class Punch extends Move {
       const circle = this.scene.add.circle(0, 0, 15, 0xffffff)
       this.circleGroup.add(circle)
     }
-    this.circleGroup.setVisible(false)
+    this.circleGroup.setVisible(false).setDepth(2000)
   }
 
   public execute(movePayload: MovePayload): void {
@@ -174,7 +175,7 @@ export class Punch extends Move {
     const distance = Phaser.Math.Distance.Between(
       this.member.sprite.x,
       this.member.sprite.y,
-      this.enemyToTarget.sprite.x,
+      this.enemyToTarget.sprite.x - this.enemyToTarget.sprite.displayWidth / 2 - 20,
       this.enemyToTarget.sprite.y
     )
 

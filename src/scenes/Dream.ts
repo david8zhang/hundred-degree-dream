@@ -27,6 +27,7 @@ export class Dream extends Phaser.Scene {
   public waveNumber: number = 1
   public waveCompleteText!: Phaser.GameObjects.Text
   public enemiesDefeated: EnemyConfig[] = []
+  private bgImage!: Phaser.GameObjects.Image
 
   constructor() {
     super('dream')
@@ -49,8 +50,7 @@ export class Dream extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor(0xffffff)
-    this.add
+    this.bgImage = this.add
       .image(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'background')
       .setOrigin(0.5, 0.5)
     const characterConfigs = this.applyLevelMultipliers(this.getCharacterConfigs())
@@ -61,9 +61,15 @@ export class Dream extends Phaser.Scene {
 
     // Once the fever reaches 1000 degrees, a piece of the Nightmare King appears
     const feverDegree = Save.getData(SaveKeys.FEVER_DEGREES) as number
-    if (feverDegree === 1000) {
+    if (feverDegree > 0) {
+      this.cameras.main.setBackgroundColor(0x000000)
+      this.bgImage.setTexture('nightmare-bg')
+      this.player.toggleDarkTheme(true)
       this.cpu.generateNightmareKing()
     } else {
+      this.cameras.main.setBackgroundColor(0xffffff)
+      this.bgImage.setTexture('background')
+      this.player.toggleDarkTheme(false)
       this.cpu.generateEnemies()
     }
 

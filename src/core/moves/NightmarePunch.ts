@@ -7,7 +7,7 @@ import { UINumber } from '../UINumber'
 import { ActionState } from '../Player'
 
 export class NightmarePunch extends Move {
-  private static DAMAGE = 4
+  private static DAMAGE = 5
   constructor(scene: Dream, member: PartyMember | EnemyMember) {
     super(scene, {
       member,
@@ -29,7 +29,7 @@ export class NightmarePunch extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -45,7 +45,7 @@ export class NightmarePunch extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         yPos,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -60,16 +60,23 @@ export class NightmarePunch extends Move {
       targets: [this.member.sprite],
       x: '+=200',
       duration: 800,
+      onStart: () => {
+        this.member.sprite.setTexture('boss-fist')
+      },
       onComplete: () => {
         this.scene.tweens.add({
           delay: 1000,
           targets: [this.member.sprite],
+          onStart: () => {
+            this.member.sprite.setTexture('boss-fist')
+          },
           x: {
             from: this.member.sprite.x,
-            to: randomPartyMember.sprite.x + randomPartyMember.sprite.displayWidth / 2,
+            to: randomPartyMember.sprite.x + this.member.sprite.displayWidth / 3,
           },
           duration: 200,
           onComplete: () => {
+            this.scene.cameras.main.shake(300, 0.003)
             this.dealDamage(randomPartyMember, this.scene.player.isParrying)
 
             // Tween back
@@ -82,6 +89,7 @@ export class NightmarePunch extends Move {
               },
               duration: 500,
               onComplete: () => {
+                this.member.sprite.setTexture('boss-arm')
                 this.onMoveCompleted()
               },
             })

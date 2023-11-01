@@ -35,6 +35,10 @@ export class HealthInfo {
     this.partyMember = config.partyMember
   }
 
+  toggleDarkTheme(darkTheme: boolean) {
+    this.text.setStyle({ color: darkTheme ? 'white' : 'black' })
+  }
+
   setVisible(isVisible: boolean) {
     this.icon.setVisible(isVisible)
     this.text.setVisible(isVisible)

@@ -43,7 +43,7 @@ export class NightmareLaser extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -59,7 +59,7 @@ export class NightmareLaser extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         yPos,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -67,7 +67,10 @@ export class NightmareLaser extends Move {
 
   public execute(): void {
     const playerParty = this.scene.getPlayerParty()
-    this.laserChargeSprite.setVisible(true).setPosition(this.member.sprite.x, this.member.sprite.y)
+    this.laserChargeSprite
+      .setVisible(true)
+      .setPosition(Constants.WINDOW_WIDTH - 250, this.member.sprite.y)
+    const xPos = Constants.WINDOW_WIDTH - 250
     this.scene.player.actionState = ActionState.PARRYING
     this.scene.tweens.add({
       targets: [this.laserChargeSprite],
@@ -82,13 +85,7 @@ export class NightmareLaser extends Move {
       ease: Phaser.Math.Easing.Sine.Out,
       duration: 1000,
       onComplete: () => {
-        this.laserSprite
-          .setPosition(
-            this.member.sprite.x - this.member.sprite.displayWidth / 2,
-            this.member.sprite.y
-          )
-          .setOrigin(1, 0.5)
-          .setVisible(true)
+        this.laserSprite.setPosition(xPos, this.member.sprite.y).setOrigin(1, 0.5).setVisible(true)
         this.laserChargeSprite.setAlpha(1)
 
         let didParry = false
@@ -109,12 +106,7 @@ export class NightmareLaser extends Move {
             didParry = this.scene.player.isParrying
           },
           onUpdate: () => {
-            this.laserSprite
-              .setPosition(
-                this.member.sprite.x - this.member.sprite.displayWidth / 2,
-                this.member.sprite.y
-              )
-              .setOrigin(1, 0.5)
+            this.laserSprite.setPosition(xPos, this.member.sprite.y).setOrigin(1, 0.5)
           },
           onHold: () => {
             this.scene.cameras.main.shake(1000, 0.0025)

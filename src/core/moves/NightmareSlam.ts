@@ -31,7 +31,7 @@ export class NightmareSlam extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         partyMemberToTarget.sprite.y - partyMemberToTarget.sprite.displayHeight / 2,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -47,7 +47,7 @@ export class NightmareSlam extends Move {
         this.scene,
         partyMemberToTarget.sprite.x,
         yPos,
-        'black',
+        'white',
         '30px'
       )
     }
@@ -63,7 +63,7 @@ export class NightmareSlam extends Move {
       targets: [this.member.sprite],
       y: {
         from: this.member.sprite.y,
-        to: -50,
+        to: -this.member.sprite.displayHeight,
       },
       duration: 800,
       onComplete: () => {
@@ -79,10 +79,11 @@ export class NightmareSlam extends Move {
           targets: [this.member.sprite],
           y: {
             from: this.member.sprite.y,
-            to: playerParty[0].sprite.y,
+            to: 50,
           },
           duration: 250,
           onComplete: () => {
+            this.scene.cameras.main.shake(250, 0.0025)
             const didParryOrDefend = this.scene.player.isParrying || playerParty[0].isDefending
             playerParty.forEach((partyMember: PartyMember) => {
               this.dealDamage(partyMember, didParryOrDefend)
@@ -92,12 +93,14 @@ export class NightmareSlam extends Move {
             this.scene.time.delayedCall(500, () => {
               this.scene.tweens.add({
                 targets: [this.member.sprite],
-                y: '-=200',
-                hold: 200,
+                y: '-=500',
+                hold: 300,
+                repeatDelay: 300,
                 yoyo: true,
-                duration: 250,
+                duration: 100,
                 repeat: 1,
-                onRepeat: () => {
+                onYoyo: () => {
+                  this.scene.cameras.main.shake(250, 0.0025)
                   const didParryOrDefend =
                     this.scene.player.isParrying || playerParty[0].isDefending
                   playerParty.forEach((partyMember: PartyMember) => {
@@ -105,12 +108,6 @@ export class NightmareSlam extends Move {
                   })
                 },
                 onComplete: () => {
-                  const didParryOrDefend =
-                    this.scene.player.isParrying || playerParty[0].isDefending
-                  playerParty.forEach((partyMember: PartyMember) => {
-                    this.dealDamage(partyMember, didParryOrDefend)
-                  })
-
                   // Tween back
                   this.scene.tweens.add({
                     delay: 500,

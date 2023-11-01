@@ -3,6 +3,7 @@ import { Move } from './moves/Move'
 import { UIValueBar } from './UIValueBar'
 import { UINumber } from './UINumber'
 import { EnemyConfig } from '~/utils/EnemyConfigs'
+import { Constants } from '~/utils/Constants'
 
 export interface EnemyMemberConfig {
   position: {
@@ -11,6 +12,7 @@ export interface EnemyMemberConfig {
   }
   enemyConfig: EnemyConfig
   id: string
+  isBoss: boolean
 }
 
 export class EnemyMember {
@@ -26,6 +28,7 @@ export class EnemyMember {
   private enemyConfig: EnemyConfig
   public id: string = ''
   private isAlreadyDying: boolean = false
+  public isBoss: boolean = false
 
   constructor(scene: Dream, config: EnemyMemberConfig) {
     this.scene = scene
@@ -33,6 +36,8 @@ export class EnemyMember {
     this.enemyConfig = config.enemyConfig
     this.currHealth = config.enemyConfig.maxHealth
     this.maxHealth = config.enemyConfig.maxHealth
+    this.isBoss = config.isBoss
+
     this.sprite = this.scene.physics.add
       .sprite(config.position.x, config.position.y, config.enemyConfig.spriteTexture)
       .setOrigin(0.5, 0.5)
@@ -41,23 +46,41 @@ export class EnemyMember {
     this.moveMapping = this.scene.convertMoveNamesToMoves(config.enemyConfig.moveNames, this)
 
     const healthbarWidth = 75
+    const xPos = this.isBoss ? Constants.WINDOW_WIDTH - 250 : this.sprite.x - healthbarWidth / 2
+
     this.healthbar = new UIValueBar(this.scene, {
       width: healthbarWidth,
       height: 10,
-      x: this.sprite.x - healthbarWidth / 2,
+      x: xPos,
       y: this.sprite.y + this.sprite.displayHeight / 2 + 20,
       maxValue: this.maxHealth,
       borderWidth: 0,
       showBorder: false,
       hideBg: false,
       changeColorBasedOnPct: false,
+      depth: this.sprite.depth + 1,
     })
     this.healthText = this.scene.add
-      .text(this.sprite.x, this.healthbar.y + 35, `${this.currHealth}`, {
+      .text(xPos + healthbarWidth / 2, this.healthbar.y + 35, `${this.currHealth}`, {
         fontSize: '20px',
-        color: 'black',
+        color: this.isBoss ? 'white' : 'black',
       })
       .setOrigin(0.5, 1)
+  }
+
+  get x() {
+    const xPos = this.isBoss ? Constants.WINDOW_WIDTH - 250 : this.sprite.x
+    return xPos
+  }
+
+  get y() {
+    return this.sprite.y
+  }
+
+  setVisible(isVisible: boolean): void {
+    this.sprite.setVisible(isVisible)
+    this.healthbar.setVisible(isVisible)
+    this.healthText.setVisible(isVisible)
   }
 
   updateHealthBarPosition() {

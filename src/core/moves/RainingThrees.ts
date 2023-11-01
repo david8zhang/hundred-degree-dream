@@ -80,6 +80,8 @@ export class RainingThrees extends Move {
     this.scene.physics.velocityFromRotation(angle, 850, newBasketball.body.velocity)
     const enemiesCollided = new Set()
 
+    const partyMember = this.member as PartyMember
+
     const overlap = this.scene.physics.add.overlap(
       newBasketball,
       this.scene.cpu.enemyGroup,
@@ -95,7 +97,7 @@ export class RainingThrees extends Move {
             this.scene,
             enemy.sprite.x,
             enemy.sprite.y - enemy.sprite.displayHeight - 30,
-            'black',
+            partyMember.darkTheme ? 'white' : 'black',
             '30px'
           )
 
@@ -118,7 +120,7 @@ export class RainingThrees extends Move {
     }
   }
 
-  public execute(movePayload?: MovePayload | undefined): void {
+  public execute(): void {
     this.isExecuting = true
     // Tween the crosshair
     this.crosshairPath.x = this.member.sprite.x
@@ -130,6 +132,8 @@ export class RainingThrees extends Move {
       startPoint.y,
       'crosshair'
     )
+    const partyMember = this.member as PartyMember
+    this.crosshair.setTintFill(partyMember.darkTheme ? 0xffffff : 0x000000)
     this.crosshair.setDepth(2000)
     this.crosshair.startFollow({
       from: 0,

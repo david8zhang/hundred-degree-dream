@@ -23,7 +23,6 @@ export class LetHimCook extends Move {
     [Phaser.Input.Keyboard.KeyCodes.F]: 'fKey',
     [Phaser.Input.Keyboard.KeyCodes.R]: 'rKey',
   }
-  private static HP_HEALED_PER_SEQ = 1
 
   private sequence: number[] = []
   private sequenceIndex: number = 0
@@ -76,7 +75,14 @@ export class LetHimCook extends Move {
 
   handleSuccessfulSequence() {
     const party = this.scene.getPlayerParty()
-    const healAmount = this.sequenceIndex * LetHimCook.HP_HEALED_PER_SEQ
+    let healAmount = 1
+    if (this.sequenceIndex >= 4) {
+      healAmount = 3
+    } else if (this.sequenceIndex >= 2) {
+      healAmount = 2
+    }
+    const currPartyMember = this.member as PartyMember
+
     party.forEach((p, index) => {
       p.heal(healAmount)
       UINumber.createNumber(
@@ -84,7 +90,7 @@ export class LetHimCook extends Move {
         this.scene,
         p.sprite.x,
         p.sprite.y - p.sprite.displayHeight / 2,
-        'black',
+        currPartyMember.darkTheme ? 'white' : 'black',
         '25px',
         () => {
           if (index == party.length - 1) {

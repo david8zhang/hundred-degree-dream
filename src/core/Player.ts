@@ -57,6 +57,8 @@ export class Player {
   private parryCooldown: boolean = false
   private parryCooldownTimerEvent: Phaser.Time.TimerEvent | null = null
 
+  private darkTheme: boolean = false
+
   constructor(scene: Dream, config: PlayerConfig) {
     this.scene = scene
     this.movesMenu = this.scene.add.group()
@@ -67,6 +69,40 @@ export class Player {
     this.setupTactics()
     this.setupKeyListener()
     this.setupHealth()
+  }
+
+  toggleDarkTheme(darkTheme: boolean) {
+    this.darkTheme = darkTheme
+    this.party.forEach((partyMember) => {
+      partyMember.toggleDarkTheme(darkTheme)
+    })
+    this.actions.forEach((action, index) => {
+      if (index !== this.selectedActionIndex) {
+        action.setStyle({ color: darkTheme ? 'white' : 'black ' })
+      }
+    })
+    this.tactics.forEach((tactic, index) => {
+      if (index !== this.selectedTacticIndex) {
+        tactic.setStyle({ color: darkTheme ? 'white' : 'black' })
+      }
+    })
+    this.movesMenu.children.entries.forEach((move, index) => {
+      const moveText = move as Phaser.GameObjects.Text
+      if (index !== this.selectedMoveIndex) {
+        moveText.setStyle({ color: darkTheme ? 'white' : 'black' })
+      }
+    })
+
+    this.defendText.setStyle({ color: darkTheme ? 'white' : 'black ' })
+    if (this.switchAllyText) {
+      this.switchAllyText.setStyle({ color: darkTheme ? 'white' : 'black ' })
+    }
+    this.fightActionText.setStyle({ color: darkTheme ? 'white' : 'black ' })
+    this.tacticsActionText.setStyle({ color: darkTheme ? 'white' : 'black' })
+
+    this.partyMemberHealthInfo.forEach((healthInfo) => {
+      healthInfo.toggleDarkTheme(darkTheme)
+    })
   }
 
   setupHealth() {
@@ -220,7 +256,7 @@ export class Player {
   scrollActions(scrollAmt: number) {
     const previousAction = this.actions[this.selectedActionIndex]
     previousAction.setStroke('black', 0)
-    previousAction.setStyle({ color: 'black' })
+    previousAction.setStyle({ color: this.darkTheme ? 'white' : 'black' })
 
     this.selectedActionIndex += scrollAmt
     if (this.selectedActionIndex == -1) {
@@ -242,7 +278,7 @@ export class Player {
       const moveNameText = this.scene.add
         .text(Constants.WINDOW_WIDTH / 2 - 50, yPos, name, {
           fontSize: '25px',
-          color: 'black',
+          color: this.darkTheme ? 'white' : 'black',
         })
         .setDepth(1000)
         .setOrigin(0, 0.5)
@@ -269,8 +305,8 @@ export class Player {
 
     // Dehighlight previous move text
     const selectedMoveText = moveList[this.selectedMoveIndex] as Phaser.GameObjects.Text
-    selectedMoveText.setStroke('black', 1)
-    selectedMoveText.setColor('black')
+    selectedMoveText.setStroke('black', 0)
+    selectedMoveText.setColor(this.darkTheme ? 'white' : 'black')
 
     this.selectedMoveIndex += scrollAmount
     if (this.selectedMoveIndex == -1) {
@@ -396,7 +432,7 @@ export class Player {
 
   scrollTactic(scrollAmount: number) {
     const previouslySelectedTactic = this.tactics[this.selectedTacticIndex]
-    previouslySelectedTactic.setStroke('black', 0).setColor('black')
+    previouslySelectedTactic.setStroke('black', 0).setColor(this.darkTheme ? 'white' : 'black')
     this.selectedTacticIndex += scrollAmount
     if (this.selectedTacticIndex == -1) {
       this.selectedTacticIndex = this.tactics.length - 1

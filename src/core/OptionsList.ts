@@ -12,6 +12,7 @@ export class OptionsList {
   private scene: Scene
   private optionsGroup: Phaser.GameObjects.Group
   private selectedOptionIndex: number = 0
+  private darkTheme: boolean = false
 
   constructor(scene: Scene) {
     this.scene = scene
@@ -41,7 +42,7 @@ export class OptionsList {
   scrollOption(scrollAmount: number) {
     const allOptions = this.optionsGroup.children.entries
     const previouslySelectedOption = allOptions[this.selectedOptionIndex] as Phaser.GameObjects.Text
-    previouslySelectedOption.setColor('black').setStroke('black', 0)
+    previouslySelectedOption.setColor(this.darkTheme ? 'white' : 'black').setStroke('black', 0)
     this.selectedOptionIndex += scrollAmount
     if (this.selectedOptionIndex == -1) {
       this.selectedOptionIndex = allOptions.length - 1
@@ -51,6 +52,10 @@ export class OptionsList {
     }
     const newSelectedOption = allOptions[this.selectedOptionIndex] as Phaser.GameObjects.Text
     newSelectedOption.setColor('green').setStroke('green', 2)
+  }
+
+  toggleDarkTheme(darkTheme: boolean) {
+    this.darkTheme = darkTheme
   }
 
   get selectedOption() {

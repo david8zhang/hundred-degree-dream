@@ -127,13 +127,15 @@ export class Stomp extends Move {
         const damage = Constants.calculateDamageBasedOnLevel(baseDamage, level)
         stompedEnemy.takeDamage(damage)
 
+        const partyMember = this.member as PartyMember
+
         if (this.isPressingKey) {
           UINumber.createNumber(
             'Great!',
             this.scene,
             stompedEnemy.sprite.x,
             stompedEnemy.sprite.y - stompedEnemy.sprite.displayHeight - 30,
-            'black',
+            partyMember.darkTheme ? 'white' : 'black',
             '30px'
           )
         }
