@@ -25,7 +25,7 @@ export class EnemyMember {
   }
   public healthbar: UIValueBar
   public healthText: Phaser.GameObjects.Text
-  private enemyConfig: EnemyConfig
+  public enemyConfig: EnemyConfig
   public id: string = ''
   private isAlreadyDying: boolean = false
   public isBoss: boolean = false
@@ -74,6 +74,12 @@ export class EnemyMember {
         this.sprite.displayWidth * scaleX,
         this.sprite.displayHeight * scaleY
       )
+    }
+
+    if (config.enemyConfig.currHealth) {
+      this.currHealth = config.enemyConfig.currHealth
+      this.healthText.setText(`${this.currHealth}`)
+      this.healthbar.setCurrValue(this.currHealth)
     }
   }
 

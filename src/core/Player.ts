@@ -535,9 +535,12 @@ export class Player {
       this.subbedPartyMembers = this.subbedPartyMembers.filter((p) => p.name != allyToSwitchInName)
       allyToSwitchIn.sprite.setVisible(true)
     } else {
+      const characterConfig = Constants.CHARACTER_CONFIGS[allyToSwitchInName]
+      const level = Save.getData(SaveKeys.CURR_LEVEL) as number
       allyToSwitchIn = new PartyMember(this.scene, {
         name: allyToSwitchInName,
-        ...Constants.CHARACTER_CONFIGS[allyToSwitchInName],
+        ...characterConfig,
+        maxHealth: characterConfig.maxHealth + (level - 1) * 5,
         position: {
           x: -50,
           y: currAlly.sprite.y,

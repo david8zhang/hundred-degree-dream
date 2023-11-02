@@ -2,10 +2,12 @@ import { Constants, Side, TVChannels } from '~/utils/Constants'
 import { Dream } from '~/scenes/Dream'
 import { EnemyMember } from './EnemyMember'
 import {
-  ALL_NIGHTMARE_CONFIGS,
   COOKING_ENEMY_CONFIGS,
   EnemyConfig,
   NATURE_ENEMY_CONFIGS,
+  NIGHTMARE_KING_ARM,
+  NIGHTMARE_KING_HEAD,
+  NIGHTMARE_KING_LEG,
   SPORTS_ENEMY_CONFIGS,
 } from '~/utils/EnemyConfigs'
 import { Save, SaveKeys } from '~/utils/Save'
@@ -23,22 +25,47 @@ export class CPU {
 
   generateNightmareKing(defaultConfig?: EnemyConfig) {
     this.clearPreviousEnemies()
-    const nightmareKingConfig = defaultConfig
-      ? defaultConfig
-      : Phaser.Utils.Array.GetRandom(ALL_NIGHTMARE_CONFIGS)
 
-    const yPos = nightmareKingConfig.spriteTexture === 'boss-foot' ? 50 : 350
-    const xPos =
-      nightmareKingConfig.spriteTexture === 'boss-foot'
-        ? Constants.WINDOW_WIDTH * 0.75
-        : Constants.WINDOW_WIDTH
+    // Generate Nightmare King limbs before nightmare king head
+    const armHP = Save.getData(SaveKeys.BOSS_HP_ARM)
+    const legHP = Save.getData(SaveKeys.BOSS_HP_LEG)
+    const headHP = Save.getData(SaveKeys.BOSS_HP_HEAD)
+    let nightmareKingConfig = defaultConfig!
+    if (armHP == 0 && legHP == 0) {
+      nightmareKingConfig = NIGHTMARE_KING_HEAD
+    } else {
+      const limbConfigs: EnemyConfig[] = []
+      if (armHP > 0 || armHP == -1) {
+        limbConfigs.push(NIGHTMARE_KING_ARM)
+      }
+      if (legHP > 0 || legHP == -1) {
+        limbConfigs.push(NIGHTMARE_KING_LEG)
+      }
+      nightmareKingConfig = Phaser.Utils.Array.GetRandom(limbConfigs)
+    }
+
+    let currHealth = nightmareKingConfig.maxHealth
+    switch (nightmareKingConfig.spriteTexture) {
+      case 'boss-head': {
+        currHealth = headHP == -1 ? nightmareKingConfig.maxHealth : headHP
+        break
+      }
+      case 'boss-arm': {
+        currHealth = armHP == -1 ? nightmareKingConfig.maxHealth : armHP
+        break
+      }
+      case 'boss-foot': {
+        currHealth = legHP == -1 ? nightmareKingConfig.maxHealth : legHP
+        break
+      }
+    }
 
     const nightmareKingEnemy = new EnemyMember(this.scene, {
       position: {
-        x: nightmareKingConfig.position.x,
-        y: nightmareKingConfig.position.y,
+        x: nightmareKingConfig!.position!.x,
+        y: nightmareKingConfig!.position!.y,
       },
-      enemyConfig: nightmareKingConfig,
+      enemyConfig: { ...nightmareKingConfig!, currHealth },
       id: `nightmare-king`,
       isBoss: true,
     })

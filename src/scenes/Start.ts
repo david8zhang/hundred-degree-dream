@@ -19,6 +19,9 @@ export class Start extends Phaser.Scene {
     Save.setData(SaveKeys.CURR_LEVEL, 1)
     Save.setData(SaveKeys.FEVER_DEGREES, 100)
     Save.setData(SaveKeys.RECENTLY_WATCHED_CHANNEL, '')
+    Save.setData(SaveKeys.BOSS_HP_ARM, -1)
+    Save.setData(SaveKeys.BOSS_HP_LEG, -1)
+    Save.setData(SaveKeys.BOSS_HP_HEAD, -1)
   }
 
   create() {

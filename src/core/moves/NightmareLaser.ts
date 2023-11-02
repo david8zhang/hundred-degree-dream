@@ -115,6 +115,9 @@ export class NightmareLaser extends Move {
               repeat: 2,
               callback: () => {
                 playerParty.forEach((partyMember) => {
+                  if (didParry) {
+                    partyMember.sprite.setTexture(`${partyMember.name.toLowerCase()}-defend`)
+                  }
                   this.dealDamage(partyMember, didParry || partyMember.isDefending)
                 })
               },
@@ -123,6 +126,9 @@ export class NightmareLaser extends Move {
           },
           onComplete: () => {
             this.isExecuting = false
+            playerParty.forEach((partyMember) => {
+              partyMember.sprite.setTexture(`${partyMember.name.toLowerCase()}`)
+            })
             this.onMoveCompleted()
           },
         })

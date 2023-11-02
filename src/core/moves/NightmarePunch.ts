@@ -77,6 +77,10 @@ export class NightmarePunch extends Move {
           duration: 200,
           onComplete: () => {
             this.scene.cameras.main.shake(300, 0.003)
+            if (this.scene.player.isParrying) {
+              randomPartyMember.sprite.setTexture(`${randomPartyMember.name.toLowerCase()}-defend`)
+            }
+
             this.dealDamage(randomPartyMember, this.scene.player.isParrying)
 
             // Tween back
@@ -89,6 +93,7 @@ export class NightmarePunch extends Move {
               },
               duration: 500,
               onComplete: () => {
+                randomPartyMember.sprite.setTexture(`${randomPartyMember.name.toLowerCase()}`)
                 this.member.sprite.setTexture('boss-arm')
                 this.onMoveCompleted()
               },

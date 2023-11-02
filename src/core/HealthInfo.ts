@@ -53,7 +53,7 @@ export class HealthInfo {
   }
 
   updateCurrHealth() {
-    this.icon.setTexture(this.partyMember.sprite.texture.key)
+    this.icon.setTexture(`${this.partyMember.name.toLowerCase()}`)
     this.text.setText(`${this.partyMember.currHealth}/${this.partyMember.maxHealth}`)
   }
 

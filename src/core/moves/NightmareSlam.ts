@@ -85,7 +85,11 @@ export class NightmareSlam extends Move {
           onComplete: () => {
             this.scene.cameras.main.shake(250, 0.0025)
             const didParryOrDefend = this.scene.player.isParrying || playerParty[0].isDefending
+
             playerParty.forEach((partyMember: PartyMember) => {
+              if (this.scene.player.isParrying) {
+                partyMember.sprite.setTexture(`${partyMember.name.toLowerCase()}-defend`)
+              }
               this.dealDamage(partyMember, didParryOrDefend)
             })
 
@@ -99,11 +103,19 @@ export class NightmareSlam extends Move {
                 yoyo: true,
                 duration: 100,
                 repeat: 1,
+                onRepeat: () => {
+                  playerParty.forEach((partyMember: PartyMember) => {
+                    partyMember.sprite.setTexture(`${partyMember.name.toLowerCase()}`)
+                  })
+                },
                 onYoyo: () => {
                   this.scene.cameras.main.shake(250, 0.0025)
                   const didParryOrDefend =
                     this.scene.player.isParrying || playerParty[0].isDefending
                   playerParty.forEach((partyMember: PartyMember) => {
+                    if (this.scene.player.isParrying) {
+                      partyMember.sprite.setTexture(`${partyMember.name.toLowerCase()}-defend`)
+                    }
                     this.dealDamage(partyMember, didParryOrDefend)
                   })
                 },

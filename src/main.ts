@@ -6,6 +6,7 @@ import { Preload } from './scenes/Preload'
 import { DreamEnd } from './scenes/DreamEnd'
 import { Start } from './scenes/Start'
 import { Tutorial } from './scenes/Tutorial'
+import { Victory } from './scenes/Victory'
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -27,7 +28,7 @@ const config: Phaser.Types.Core.GameConfig = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   fps: { forceSetTimeOut: true, target: 60 },
-  scene: [Preload, Start, Tutorial, Overworld, Dream, DreamEnd],
+  scene: [Preload, Start, Tutorial, Overworld, Dream, DreamEnd, Victory],
 }
 
 export default new Phaser.Game(config)

@@ -1,4 +1,5 @@
 import { Button } from '~/core/Button'
+import { EnemyMember } from '~/core/EnemyMember'
 import { UIValueBar } from '~/core/UIValueBar'
 import { Constants } from '~/utils/Constants'
 import { EnemyConfig } from '~/utils/EnemyConfigs'
@@ -31,6 +32,7 @@ export class DreamEnd extends Phaser.Scene {
   private continueButton!: Button
   private currState = DreamEndState.STATS
   private totalExpGained: number = 0
+  private enemiesDefeated: EnemyConfig[] = []
 
   // Countdown until nightmare king
   private feverDegreeText!: Phaser.GameObjects.Text
@@ -121,6 +123,7 @@ export class DreamEnd extends Phaser.Scene {
     }, 0)
     this.expEarnedValue.setText(`${this.totalExpGained}`)
     this.wavesCompletedValue.setText(`${data.wavesCompleted}`)
+    this.enemiesDefeated = data.enemiesDefeated
   }
 
   hideEndOfRoundStats() {
@@ -336,7 +339,16 @@ export class DreamEnd extends Phaser.Scene {
           case DreamEndState.EXP_GAIN: {
             this.currState = DreamEndState.SHOW_FEVER_DEGREES
             this.hideExpGainStats()
-            this.displayFeverDegreeProgression()
+            if (this.enemiesDefeated[0].spriteTexture == 'boss-head') {
+              const bossHeadHealth = Save.getData(SaveKeys.BOSS_HP_HEAD)
+              if (bossHeadHealth === 0) {
+                this.scene.start('victory')
+              } else {
+                this.displayFeverDegreeProgression()
+              }
+            } else {
+              this.displayFeverDegreeProgression()
+            }
             break
           }
           case DreamEndState.SHOW_FEVER_DEGREES: {

@@ -62,7 +62,7 @@ export class Dream extends Phaser.Scene {
 
     // Once the fever reaches 1000 degrees, a piece of the Nightmare King appears
     const feverDegree = Save.getData(SaveKeys.FEVER_DEGREES) as number
-    if (feverDegree >= 1000) {
+    if (feverDegree >= 0) {
       this.cameras.main.setBackgroundColor(0x000000)
       this.bgImage.setTexture('nightmare-bg')
       this.player.toggleDarkTheme(true)
@@ -148,23 +148,58 @@ export class Dream extends Phaser.Scene {
     return this.getPlayerParty().length == 0 || this.getEnemies().length == 0
   }
 
-  handleRoundOver() {
-    const enemy = this.cpu.enemies[0]
-
-    if (
-      this.getPlayerParty().length == 0 ||
-      this.waveNumber == Constants.NUM_WAVES_PER_DREAM ||
-      (enemy.isBoss && enemy.currHealth == 0)
-    ) {
-      const dreamEndPayload: DreamEndPayload = {
-        enemiesDefeated: this.enemiesDefeated,
-        wavesCompleted: Math.max(0, this.waveNumber - 1),
+  handleBossRoundOver(bossEnemy: EnemyMember) {
+    switch (bossEnemy.sprite.texture.key) {
+      case 'boss-arm': {
+        Save.setData(SaveKeys.BOSS_HP_ARM, bossEnemy.currHealth)
+        break
       }
-      this.scene.start('dream-end', dreamEndPayload)
-      this.enemiesDefeated = []
-      this.waveNumber = 1
+      case 'boss-foot': {
+        Save.setData(SaveKeys.BOSS_HP_LEG, bossEnemy.currHealth)
+        break
+      }
+      case 'boss-head': {
+        Save.setData(SaveKeys.BOSS_HP_HEAD, bossEnemy.currHealth)
+        break
+      }
+    }
+    const expReward =
+      bossEnemy.currHealth > 0
+        ? bossEnemy.enemyConfig.baseExpReward * 0.5
+        : bossEnemy.enemyConfig.baseExpReward
+    const dreamEndPayload: DreamEndPayload = {
+      enemiesDefeated: [
+        {
+          maxHealth: bossEnemy.maxHealth,
+          spriteTexture: bossEnemy.sprite.texture.key,
+          moveNames: [],
+          baseExpReward: expReward,
+        },
+      ],
+      wavesCompleted: 1,
+    }
+    this.scene.start('dream-end', dreamEndPayload)
+    this.enemiesDefeated = []
+    this.waveNumber = 1
+  }
+
+  handleRoundOver() {
+    // Handle things differently if the enemy is a boss
+    const enemy = this.cpu.enemies[0]
+    if (enemy.isBoss) {
+      this.handleBossRoundOver(enemy)
     } else {
-      this.handleWaveComplete()
+      if (this.getPlayerParty().length == 0 || this.waveNumber == Constants.NUM_WAVES_PER_DREAM) {
+        const dreamEndPayload: DreamEndPayload = {
+          enemiesDefeated: this.enemiesDefeated,
+          wavesCompleted: Math.max(0, this.waveNumber - 1),
+        }
+        this.scene.start('dream-end', dreamEndPayload)
+        this.enemiesDefeated = []
+        this.waveNumber = 1
+      } else {
+        this.handleWaveComplete()
+      }
     }
   }
 

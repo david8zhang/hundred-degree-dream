@@ -5,6 +5,9 @@ export enum SaveKeys {
   ACTIVE_ALLY = 'ACTIVE_ALLY',
   FEVER_DEGREES = 'FEVER_DEGREES',
   RECENTLY_WATCHED_CHANNEL = 'RECENTLY_WATCHED_CHANNEL',
+  BOSS_HP_HEAD = 'BOSS_HP_HEAD',
+  BOSS_HP_ARM = 'BOSS_HP_ARM',
+  BOSS_HP_LEG = 'BOSS_HP_LEG',
 }
 
 export class Save {
@@ -29,11 +32,8 @@ export class Save {
     return Save._instance
   }
 
-  public static doesSaveExist() {
-    return localStorage.getItem(Save.LOCAL_STORAGE_KEY) != undefined
-  }
-
   public static clearSave() {
+    Save.saveObj = {}
     localStorage.clear()
   }
 
