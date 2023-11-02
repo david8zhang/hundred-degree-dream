@@ -56,10 +56,14 @@ export class EnemyCharge extends Move {
                 // Successful parry!
                 let didParry = false
                 if (this.scene.player.isParrying) {
-                  partyMemberToTarget.sprite.setTint(0x0000ff)
-                  this.scene.time.delayedCall(200, () => {
-                    partyMemberToTarget.sprite.clearTint()
-                  })
+                  if (!partyMemberToTarget.isDefending) {
+                    partyMemberToTarget.sprite.setTexture(
+                      `${partyMemberToTarget.name.toLowerCase()}-defend`
+                    )
+                    this.scene.time.delayedCall(200, () => {
+                      partyMemberToTarget.sprite.setTexture(partyMemberToTarget.name.toLowerCase())
+                    })
+                  }
                   didParry = true
                 }
                 this.dealDamage(partyMemberToTarget, cachedXPos, didParry)

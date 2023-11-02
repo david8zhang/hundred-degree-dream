@@ -71,6 +71,9 @@ export class PartyMember {
   }
 
   setDefending(isDefending: boolean) {
+    this.sprite.setTexture(
+      isDefending ? `${this.sprite.texture.key}-defend` : this.name.toLowerCase()
+    )
     this.defendingText.setVisible(isDefending)
   }
 

@@ -1,4 +1,5 @@
 import { MoveNames } from '~/core/moves/MoveNames'
+import { Constants } from './Constants'
 
 export interface EnemyConfig {
   maxHealth: number
@@ -9,41 +10,73 @@ export interface EnemyConfig {
     width: number
     height: number
   }
+  position?: {
+    x: number
+    y: number
+  }
 }
 
-export const BARNACLE = {
+export const BASKETBALL = {
+  maxHealth: 3,
+  spriteTexture: 'basketball-enemy',
+  moveNames: [MoveNames.ENEMY_CHARGE],
+  baseExpReward: 3,
+}
+
+export const HOOP = {
+  maxHealth: 4,
+  spriteTexture: 'hoop',
+  moveNames: [MoveNames.ENEMY_CHARGE],
+  baseExpReward: 4,
+}
+
+export const FAN = {
   maxHealth: 5,
-  spriteTexture: 'barnacle',
+  spriteTexture: 'fan',
   moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
-  baseExpReward: 6,
+  baseExpReward: 5,
 }
 
-export const GREEN_FISH = {
+export const CARROT = {
+  maxHealth: 3,
+  spriteTexture: 'carrot',
+  moveNames: [MoveNames.ENEMY_CHARGE],
+  baseExpReward: 3,
+}
+
+export const CHILI = {
+  maxHealth: 3,
+  spriteTexture: 'chili',
+  moveNames: [MoveNames.ENEMY_CHARGE],
+  baseExpReward: 3,
+}
+
+export const DRUMSTICK = {
+  maxHealth: 3,
+  spriteTexture: 'drumstick',
+  moveNames: [MoveNames.ENEMY_CHARGE],
+  baseExpReward: 3,
+}
+
+export const RAT = {
   maxHealth: 5,
-  spriteTexture: 'fishGreen',
+  spriteTexture: 'rat',
   moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
-  baseExpReward: 6,
+  baseExpReward: 5,
 }
 
-export const SNAIL = {
-  maxHealth: 3,
-  spriteTexture: 'snail',
-  moveNames: [MoveNames.ENEMY_CHARGE],
-  baseExpReward: 3,
+export const MONKEY = {
+  maxHealth: 4,
+  spriteTexture: 'monkey',
+  moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
+  baseExpReward: 4,
 }
 
-export const SPIDER = {
-  maxHealth: 3,
-  spriteTexture: 'spider',
-  moveNames: [MoveNames.ENEMY_CHARGE],
-  baseExpReward: 3,
-}
-
-export const BLUE_SLIME = {
-  maxHealth: 3,
-  spriteTexture: 'slimeBlue',
-  moveNames: [MoveNames.ENEMY_CHARGE],
-  baseExpReward: 3,
+export const SNAKE = {
+  maxHealth: 4,
+  spriteTexture: 'snake',
+  moveNames: [MoveNames.ENEMY_CHARGE, MoveNames.ENEMY_MULTI],
+  baseExpReward: 4,
 }
 
 export const NIGHTMARE_KING_ARM = {
@@ -54,6 +87,10 @@ export const NIGHTMARE_KING_ARM = {
   body: {
     width: 0.9,
     height: 0.5,
+  },
+  position: {
+    x: Constants.WINDOW_WIDTH + 300,
+    y: 350,
   },
 }
 
@@ -66,6 +103,10 @@ export const NIGHTMARE_KING_LEG = {
     width: 0.9,
     height: 0.9,
   },
+  position: {
+    x: Constants.WINDOW_WIDTH * 0.75,
+    y: -250,
+  },
 }
 
 export const NIGHTMARE_KING_HEAD = {
@@ -77,8 +118,14 @@ export const NIGHTMARE_KING_HEAD = {
     width: 0.9,
     height: 0.9,
   },
+  position: {
+    x: Constants.WINDOW_WIDTH - 75,
+    y: 350,
+  },
 }
 
-export const ALL_ENEMY_CONFIGS = [BARNACLE, GREEN_FISH, SNAIL, SPIDER, BLUE_SLIME]
-export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_LEG]
-// export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_HEAD, NIGHTMARE_KING_ARM, NIGHTMARE_KING_LEG]
+export const SPORTS_ENEMY_CONFIGS = [BASKETBALL, HOOP, FAN]
+export const COOKING_ENEMY_CONFIGS = [CHILI, CARROT, DRUMSTICK, RAT]
+export const NATURE_ENEMY_CONFIGS = [MONKEY, SNAKE]
+
+export const ALL_NIGHTMARE_CONFIGS = [NIGHTMARE_KING_ARM]

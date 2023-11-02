@@ -83,6 +83,15 @@ export class EnemyMulti extends Move {
           if (index == 0 && (this.scene.player.isParrying || playerMember.isDefending)) {
             this.successfullyParried = true
           }
+          if (this.successfullyParried) {
+            if (!playerMember.isDefending) {
+              playerMember.sprite.setTexture(`${playerMember.name.toLowerCase()}-defend`)
+              this.scene.time.delayedCall(200, () => {
+                playerMember.sprite.setTexture(playerMember.name.toLowerCase())
+              })
+            }
+          }
+
           this.dealDamage(playerMember, this.successfullyParried)
           overlap.destroy()
         }

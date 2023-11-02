@@ -18,6 +18,7 @@ export class Punch extends Move {
   private timingType: TimingType = TimingType.OK
   private canStartMinigame: boolean = false
   private canEndMinigame: boolean = false
+  private isReleased: boolean = false
   private cachedInitialXPos: number = -1
   private enemyToTarget: EnemyMember | null = null
   private windUpTween: Phaser.Tweens.Tween | null = null
@@ -46,13 +47,14 @@ export class Punch extends Move {
     const fKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
     fKey
       .on('down', () => {
-        if (this.canStartMinigame) {
+        if (this.canStartMinigame && !this.isReleased) {
           this.canEndMinigame = true
           this.startCircleSequence()
         }
       })
       .on('up', () => {
-        if (this.canEndMinigame) {
+        if (this.canEndMinigame && !this.isReleased) {
+          this.isReleased = true
           this.handleRelease()
         }
       })
@@ -88,6 +90,7 @@ export class Punch extends Move {
   }
 
   handleRelease() {
+    this.isReleased = true
     this.circleGroup.setVisible(false)
     const timingType = this.timingType
     const level = Save.getData(SaveKeys.CURR_LEVEL)
@@ -149,6 +152,7 @@ export class Punch extends Move {
   }
 
   resetMoveState() {
+    this.isReleased = false
     this.instructionText!.setVisible(false)
     this.isExecuting = false
     this.highlightedCircleIndex = 0
@@ -185,16 +189,10 @@ export class Punch extends Move {
     this.enemyToTarget = targets[0] as EnemyMember
     this.cachedInitialXPos = this.member.sprite.x
     this.isExecuting = true
-    const distance = Phaser.Math.Distance.Between(
-      this.member.sprite.x,
-      this.member.sprite.y,
-      this.enemyToTarget.sprite.x - this.enemyToTarget.sprite.displayWidth / 2 - 20,
-      this.enemyToTarget.sprite.y
-    )
 
     const tweenToTarget = this.scene.tweens.add({
       targets: [this.member.sprite],
-      duration: (distance / Constants.MOVE_SPEED) * 1000,
+      duration: 1000,
       x: {
         from: this.member.sprite.x,
         to: this.enemyToTarget.sprite.x - this.enemyToTarget.sprite.displayWidth / 2 - 20,

@@ -24,13 +24,12 @@ export class TutorialOverworld extends TutorialScene {
   }
 
   public start(): void {
+    this.tutorial.bgImage.setTexture('overworld')
+    this.tutorial.tutorialText.setColor('black')
+    this.tutorial.continueButtonText.setColor('black')
     this.tutorial.cameras.main.setBackgroundColor(0x000000)
     this.tutorial.player.setVisible(false)
     this.tutorial.cpu.setVisible(false)
-    this.tutorial.tutorialText.setStyle({ color: 'white' })
-    this.tutorial.continueButtonText.setStyle({ color: 'white' })
-
-    this.tutorial.bgImage.setVisible(false)
     const tutorialTextLine = TutorialOverworld.TEXT_LINES[this.tutorialTextIndex]
     this.tutorial.tutorialText.setText(tutorialTextLine)
     this.tutorial.continueButtonText.setVisible(true)

@@ -79,7 +79,7 @@ export class NightmareSlam extends Move {
           targets: [this.member.sprite],
           y: {
             from: this.member.sprite.y,
-            to: 50,
+            to: -250,
           },
           duration: 250,
           onComplete: () => {

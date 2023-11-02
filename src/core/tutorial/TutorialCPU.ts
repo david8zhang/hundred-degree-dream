@@ -2,7 +2,7 @@ import { Dream } from '~/scenes/Dream'
 import { CPU } from '../CPU'
 import { EnemyMember } from '../EnemyMember'
 import { Constants } from '~/utils/Constants'
-import { BLUE_SLIME, EnemyConfig } from '~/utils/EnemyConfigs'
+import { CHILI, EnemyConfig } from '~/utils/EnemyConfigs'
 
 export interface TutorialCPUConfig {
   onMoveCompleted: Function
@@ -52,7 +52,7 @@ export class TutorialCPU extends CPU {
     this.clearPreviousEnemies()
     const yPos = 400
     for (let i = 0; i < numEnemies; i++) {
-      const enemyConfig = BLUE_SLIME
+      const enemyConfig = CHILI
       const enemy = new EnemyMember(this.scene, {
         position: {
           x: Constants.WINDOW_WIDTH + 50,

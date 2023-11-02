@@ -1,7 +1,13 @@
-import { Constants, Side } from '~/utils/Constants'
+import { Constants, Side, TVChannels } from '~/utils/Constants'
 import { Dream } from '~/scenes/Dream'
 import { EnemyMember } from './EnemyMember'
-import { ALL_ENEMY_CONFIGS, ALL_NIGHTMARE_CONFIGS, EnemyConfig } from '~/utils/EnemyConfigs'
+import {
+  ALL_NIGHTMARE_CONFIGS,
+  COOKING_ENEMY_CONFIGS,
+  EnemyConfig,
+  NATURE_ENEMY_CONFIGS,
+  SPORTS_ENEMY_CONFIGS,
+} from '~/utils/EnemyConfigs'
 import { Save, SaveKeys } from '~/utils/Save'
 
 export class CPU {
@@ -29,8 +35,8 @@ export class CPU {
 
     const nightmareKingEnemy = new EnemyMember(this.scene, {
       position: {
-        x: xPos,
-        y: yPos,
+        x: nightmareKingConfig.position.x,
+        y: nightmareKingConfig.position.y,
       },
       enemyConfig: nightmareKingConfig,
       id: `nightmare-king`,
@@ -51,7 +57,7 @@ export class CPU {
   generateEnemies(numEnemiesOverride: number = 1) {
     this.clearPreviousEnemies()
     let xPos = Constants.LEFTMOST_CPU_X_POS
-    const yPos = 400
+    const yPos = 375
     let numEnemies = numEnemiesOverride
     if (this.scene.waveNumber >= 0 && this.scene.waveNumber < 3) {
       numEnemies = Phaser.Math.Between(1, 3)
@@ -62,8 +68,25 @@ export class CPU {
     if (this.scene.waveNumber >= 5) {
       numEnemies = 3
     }
+    const recentlyWatchedTVChannel = Save.getData(SaveKeys.RECENTLY_WATCHED_CHANNEL) as string
+    let enemyConfigs = COOKING_ENEMY_CONFIGS
+    switch (recentlyWatchedTVChannel) {
+      case TVChannels.SPORTS: {
+        enemyConfigs = SPORTS_ENEMY_CONFIGS
+        break
+      }
+      case TVChannels.NATURE: {
+        enemyConfigs = NATURE_ENEMY_CONFIGS
+        break
+      }
+      case TVChannels.COOKING: {
+        enemyConfigs = COOKING_ENEMY_CONFIGS
+        break
+      }
+    }
+
     for (let i = 0; i < numEnemies; i++) {
-      const randomConfig = Phaser.Utils.Array.GetRandom(ALL_ENEMY_CONFIGS)
+      const randomConfig = Phaser.Utils.Array.GetRandom(enemyConfigs)
       const expReward = this.getExpReward(randomConfig)
       const enemy = new EnemyMember(this.scene, {
         position: {

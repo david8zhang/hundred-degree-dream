@@ -14,11 +14,13 @@ export default class Overworld extends Phaser.Scene {
   private goToSleepText!: Phaser.GameObjects.Text
   private watchTVText!: Phaser.GameObjects.Text
   private tvChannelText!: Phaser.GameObjects.Text
+  private tvChannelRect!: Phaser.GameObjects.Rectangle
   private continueText!: Phaser.GameObjects.Text
   private tvChannelSelected!: TVChannels
 
   private recruitAllyText!: Phaser.GameObjects.Text
   private allySprite!: Phaser.GameObjects.Sprite
+  private bgImage!: Phaser.GameObjects.Image
 
   constructor() {
     super('overworld')
@@ -48,6 +50,7 @@ export default class Overworld extends Phaser.Scene {
   }
 
   displayNewAllyRecruitAnimation(allyName: string) {
+    this.bgImage.setVisible(false)
     this.continueText.setVisible(false)
     this.recruitAllyText.setText(`${allyName} has joined your party!`).setVisible(true).setAlpha(1)
     this.tweens.add({
@@ -89,24 +92,32 @@ export default class Overworld extends Phaser.Scene {
   displayTVChannelInfo() {
     this.overworldState = OverworldState.WATCHING_TV
     this.tvChannelSelected = Phaser.Utils.Array.GetRandom(Object.keys(TVChannels))
+    Save.setData(SaveKeys.RECENTLY_WATCHED_CHANNEL, this.tvChannelSelected)
     let channelText = ''
     switch (this.tvChannelSelected) {
       case TVChannels.SPORTS: {
         channelText = Phaser.Utils.Array.GetRandom(Constants.SPORTS_CHANNEL_TEXT)
+        this.bgImage.setTexture('sports-channel')
         break
       }
       case TVChannels.COOKING: {
         channelText = Phaser.Utils.Array.GetRandom(Constants.COOKING_CHANNEL_TEXT)
+        this.bgImage.setTexture('cooking-channel')
         break
       }
       case TVChannels.NATURE: {
         channelText = Phaser.Utils.Array.GetRandom(Constants.NATURE_CHANEL_TEXT)
+        this.bgImage.setTexture('nature-channel')
         break
       }
     }
     this.goToSleepText.setVisible(false)
     this.watchTVText.setVisible(false)
     this.tvChannelText.setText(channelText).setVisible(true)
+    this.tvChannelRect
+      .setDisplaySize(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT * 0.28)
+      .setPosition(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT - 110)
+      .setVisible(true)
     this.continueText.setVisible(true)
   }
 
@@ -116,21 +127,24 @@ export default class Overworld extends Phaser.Scene {
   }
 
   create() {
+    this.bgImage = this.add
+      .image(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'overworld')
+      .setOrigin(0.5, 0.5)
     this.cameras.main.setBackgroundColor(0x000000)
     this.overworldState = OverworldState.CHOOSING_ACTIVITY
     this.goToSleepText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'Go to sleep', {
         fontSize: '25px',
-        color: 'white',
+        color: 'black',
       })
       .setInteractive({ cursor: 'pointer ' })
       .on(Phaser.Input.Events.POINTER_OVER, () => {
-        this.goToSleepText.setStroke('yellow', 2)
-        this.goToSleepText.setColor('yellow')
+        this.goToSleepText.setStroke('green', 2)
+        this.goToSleepText.setColor('green')
       })
       .on(Phaser.Input.Events.POINTER_OUT, () => {
-        this.goToSleepText.setStroke('white', 0)
-        this.goToSleepText.setColor('white')
+        this.goToSleepText.setStroke('black', 0)
+        this.goToSleepText.setColor('black')
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
         this.scene.start('dream')
@@ -144,17 +158,17 @@ export default class Overworld extends Phaser.Scene {
         'Watch TV',
         {
           fontSize: '25px',
-          color: 'white',
+          color: 'black',
         }
       )
       .setInteractive({ cursor: 'pointer ' })
       .on(Phaser.Input.Events.POINTER_OVER, () => {
-        this.watchTVText.setStroke('yellow', 2)
-        this.watchTVText.setColor('yellow')
+        this.watchTVText.setStroke('green', 2)
+        this.watchTVText.setColor('green')
       })
       .on(Phaser.Input.Events.POINTER_OUT, () => {
-        this.watchTVText.setStroke('white', 0)
-        this.watchTVText.setColor('white')
+        this.watchTVText.setStroke('black', 0)
+        this.watchTVText.setColor('black')
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
         this.displayTVChannelInfo()
@@ -163,13 +177,28 @@ export default class Overworld extends Phaser.Scene {
 
     // TV Channel text
     this.tvChannelText = this.add
-      .text(30, Constants.WINDOW_HEIGHT - 75, '', {
+      .text(30, Constants.WINDOW_HEIGHT - 200, '', {
         fontSize: '30px',
         color: 'white',
       })
-      .setOrigin(0, 1)
+      .setOrigin(0, 0)
       .setWordWrapWidth(Constants.WINDOW_WIDTH - 30)
       .setVisible(false)
+      .setDepth(1000)
+
+    this.tvChannelRect = this.add
+      .rectangle(
+        Constants.WINDOW_WIDTH / 2,
+        this.tvChannelText.y,
+        Constants.WINDOW_WIDTH,
+        300,
+        0x000000
+      )
+      .setAlpha(0.5)
+      .setOrigin(0.5, 0.5)
+      .setVisible(false)
+      .setDepth(900)
+
     this.continueText = this.add
       .text(Constants.WINDOW_WIDTH - 30, Constants.WINDOW_HEIGHT - 15, 'Continue', {
         fontSize: '25px',
@@ -183,8 +212,8 @@ export default class Overworld extends Phaser.Scene {
         this.watchTVText.setColor('yellow')
       })
       .on(Phaser.Input.Events.POINTER_OUT, () => {
-        this.watchTVText.setStroke('white', 0)
-        this.watchTVText.setColor('white')
+        this.watchTVText.setStroke('black', 0)
+        this.watchTVText.setColor('black')
       })
       .on(Phaser.Input.Events.POINTER_UP, () => {
         if (this.overworldState == OverworldState.WATCHING_TV) {
@@ -198,6 +227,7 @@ export default class Overworld extends Phaser.Scene {
           this.scene.start('dream')
         }
       })
+      .setDepth(1000)
       .setVisible(false)
 
     // Recruit new ally text

@@ -72,7 +72,7 @@ export class NightmarePunch extends Move {
           },
           x: {
             from: this.member.sprite.x,
-            to: randomPartyMember.sprite.x + this.member.sprite.displayWidth / 3,
+            to: randomPartyMember.sprite.x + this.member.sprite.displayWidth / 2.25,
           },
           duration: 200,
           onComplete: () => {
