@@ -9,7 +9,8 @@ export class TutorialIntro extends TutorialScene {
     "Conch: Long story short, you're trapped in here and you gotta defeat the Nightmare King to escape.",
     'Jambo: Nightmare King? Dream World?',
     "Conch: Yup. The Nightmare King rules this place, with his army of minions. They're creatures that take the form of things you see when you're awake",
-    "Conch: Speaking of which, there's one of his minions now. Go and slug him in the face before he has a chance to fight back!",
+    "Conch: Speaking of which, there's one of his minions now!",
+    "Conch: Press 'Space' to use your Punch attack to slug him in the face!",
   ]
   private tutorialIndex: number = 0
 

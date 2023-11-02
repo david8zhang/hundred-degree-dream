@@ -214,6 +214,12 @@ export class Player {
     this.highlightAction()
   }
 
+  dehighlightAction(index?: number) {
+    const action = this.actions[index || this.selectedActionIndex]
+    action.setStroke('black', 0)
+    action.setStyle({ color: this.darkTheme ? 'white' : 'black' })
+  }
+
   highlightAction() {
     const selectedAction = this.actions[this.selectedActionIndex]
     selectedAction.setStroke('green', 2)
@@ -255,10 +261,7 @@ export class Player {
   }
 
   scrollActions(scrollAmt: number) {
-    const previousAction = this.actions[this.selectedActionIndex]
-    previousAction.setStroke('black', 0)
-    previousAction.setStyle({ color: this.darkTheme ? 'white' : 'black' })
-
+    this.dehighlightAction()
     this.selectedActionIndex += scrollAmt
     if (this.selectedActionIndex == -1) {
       this.selectedActionIndex = this.actions.length - 1
@@ -266,9 +269,7 @@ export class Player {
     if (this.selectedActionIndex == this.actions.length) {
       this.selectedActionIndex = 0
     }
-    const newAction = this.actions[this.selectedActionIndex]
-    newAction.setStroke('green', 2)
-    newAction.setStyle({ color: 'green' })
+    this.highlightAction()
   }
 
   displayMovesMenu() {

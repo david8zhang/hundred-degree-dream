@@ -12,7 +12,7 @@ export class TutorialStomp extends TutorialScene {
   ]
 
   public static STOMP_COMPLETE_LINES = [
-    "Conch: Alright! I'll leave it up to you to do the rest. Use everything you've learned up until this point.",
+    'Conch: Nice job! You can use the Arrow Keys to navigate menu options, and Escape to go back. Finish these guys off!',
   ]
 
   private currTextLines: string[] = []
@@ -37,21 +37,20 @@ export class TutorialStomp extends TutorialScene {
   }
 
   public onContinuePressed(): void {
-    if (this.stompComplete) {
-      this.tutorial.cpu.startTurn()
-      this.tutorial.currTurn = Side.CPU
-      this.tutorial.continueButtonText.setVisible(false)
-    } else {
-      if (this.tutorialTextIndex === this.currTextLines.length - 1) {
+    if (this.tutorialTextIndex === this.currTextLines.length - 1) {
+      if (this.stompComplete) {
+        this.tutorial.player.startTurn()
+        this.tutorial.currTurn = Side.PLAYER
+      } else {
         this.tutorial.player.selectedActionIndex = 0
         this.tutorial.player.startTurn()
         this.tutorial.currTurn = Side.PLAYER
         this.tutorial.continueButtonText.setVisible(false)
-      } else {
-        this.tutorialTextIndex++
-        const tutorialText = this.currTextLines[this.tutorialTextIndex]
-        this.tutorial.tutorialText.setText(tutorialText)
       }
+    } else {
+      this.tutorialTextIndex++
+      const tutorialText = this.currTextLines[this.tutorialTextIndex]
+      this.tutorial.tutorialText.setText(tutorialText)
     }
   }
 
@@ -65,6 +64,7 @@ export class TutorialStomp extends TutorialScene {
         this.stompComplete = true
 
         this.tutorial.continueButtonText.setVisible(true)
+        this.tutorial.player.dehighlightAction(1)
         this.tutorial.player.selectedActionIndex = 0
         this.tutorial.player.shouldHideFightOption = false
         this.tutorial.player.shouldHideTacticsOption = false

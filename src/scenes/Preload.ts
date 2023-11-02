@@ -20,6 +20,7 @@ export class Preload extends Phaser.Scene {
     this.load.image('jambo-defend', 'characters/jambo-defend.png')
     this.load.image('chef-defend', 'characters/chef-defend.png')
     this.load.image('athlete-defend', 'characters/athlete-defend.png')
+    this.load.image('tiger-defend', 'characters/tiger-defend.png')
 
     // UI Stuff
     this.load.image('cursor', 'cursor.png')

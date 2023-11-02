@@ -26,6 +26,7 @@ export class DreamEnd extends Phaser.Scene {
   private expBar!: UIValueBar
   private currLevelText!: Phaser.GameObjects.Text
   private nextLevelText!: Phaser.GameObjects.Text
+  private levelUpTextGroup!: Phaser.GameObjects.Group
 
   private continueButton!: Button
   private currState = DreamEndState.STATS
@@ -40,6 +41,7 @@ export class DreamEnd extends Phaser.Scene {
   }
 
   initializeText() {
+    this.levelUpTextGroup = this.add.group()
     this.titleText = this.add
       .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT * 0.25, 'You woke up!', {
         fontSize: '40px',
@@ -171,7 +173,7 @@ export class DreamEnd extends Phaser.Scene {
             })
             .setOrigin(0.5, 1)
             .setAlpha(0)
-          const newLevelText = this.add
+          const levelUpValue = this.add
             .text(
               Constants.WINDOW_WIDTH / 2,
               levelUpText.y + levelUpText.displayHeight + 30,
@@ -184,7 +186,7 @@ export class DreamEnd extends Phaser.Scene {
             .setOrigin(0.5, 1)
             .setAlpha(0)
           this.tweens.add({
-            targets: [levelUpText, newLevelText],
+            targets: [levelUpText, levelUpValue],
             alpha: {
               from: 0,
               to: 1,
@@ -192,16 +194,16 @@ export class DreamEnd extends Phaser.Scene {
             duration: 500,
             onComplete: () => {
               this.tweens.add({
-                targets: [levelUpText, newLevelText],
+                targets: [levelUpText, levelUpValue],
                 delay: 1000,
                 duration: 500,
                 y: '-=150',
                 ease: Phaser.Math.Easing.Sine.InOut,
                 onComplete: () => {
-                  const healthBonusText = this.add
+                  const levelUpHPBonus = this.add
                     .text(
                       Constants.WINDOW_WIDTH / 3,
-                      newLevelText.y + newLevelText.displayHeight + 20,
+                      levelUpValue.y + levelUpValue.displayHeight + 20,
                       'Health',
                       {
                         fontSize: '30px',
@@ -209,8 +211,8 @@ export class DreamEnd extends Phaser.Scene {
                       }
                     )
                     .setOrigin(0, 0.5)
-                  this.add
-                    .text(Constants.WINDOW_WIDTH * (2 / 3), healthBonusText.y, '+5', {
+                  const levelUpHPValue = this.add
+                    .text(Constants.WINDOW_WIDTH * (2 / 3), levelUpHPBonus.y, '+5', {
                       fontSize: '30px',
                       color: 'white',
                     })
@@ -219,7 +221,7 @@ export class DreamEnd extends Phaser.Scene {
                   const damageBonusText = this.add
                     .text(
                       Constants.WINDOW_WIDTH / 3,
-                      healthBonusText.y + healthBonusText.displayHeight + 20,
+                      levelUpHPBonus.y + levelUpHPBonus.displayHeight + 20,
                       'Damage',
                       {
                         fontSize: '30px',
@@ -227,12 +229,20 @@ export class DreamEnd extends Phaser.Scene {
                       }
                     )
                     .setOrigin(0, 0.5)
-                  this.add
+                  const damageBonusValue = this.add
                     .text(Constants.WINDOW_WIDTH * (2 / 3), damageBonusText.y, '+25%', {
                       fontSize: '30px',
                       color: 'white',
                     })
                     .setOrigin(1, 0.5)
+
+                  this.levelUpTextGroup.add(levelUpText)
+                  this.levelUpTextGroup.add(levelUpValue)
+                  this.levelUpTextGroup.add(levelUpHPBonus)
+                  this.levelUpTextGroup.add(levelUpHPValue)
+                  this.levelUpTextGroup.add(damageBonusText)
+                  this.levelUpTextGroup.add(damageBonusValue)
+
                   this.applyExpGain(newLevel)
                   this.continueButton.setVisible(true)
                 },
@@ -299,6 +309,7 @@ export class DreamEnd extends Phaser.Scene {
     this.expBar.setVisible(false)
     this.currLevelText.setVisible(false)
     this.nextLevelText.setVisible(false)
+    this.levelUpTextGroup.setVisible(false)
   }
 
   applyExpGain(newLevel: number) {

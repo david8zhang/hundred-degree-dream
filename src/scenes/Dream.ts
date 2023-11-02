@@ -62,7 +62,7 @@ export class Dream extends Phaser.Scene {
 
     // Once the fever reaches 1000 degrees, a piece of the Nightmare King appears
     const feverDegree = Save.getData(SaveKeys.FEVER_DEGREES) as number
-    if (feverDegree >= 0) {
+    if (feverDegree >= 1000) {
       this.cameras.main.setBackgroundColor(0x000000)
       this.bgImage.setTexture('nightmare-bg')
       this.player.toggleDarkTheme(true)
@@ -149,7 +149,7 @@ export class Dream extends Phaser.Scene {
   }
 
   handleRoundOver() {
-    if (this.getPlayerParty().length == 0 || this.waveNumber == 1) {
+    if (this.getPlayerParty().length == 0 || this.waveNumber == Constants.NUM_WAVES_PER_DREAM + 1) {
       const dreamEndPayload: DreamEndPayload = {
         enemiesDefeated: this.enemiesDefeated,
         wavesCompleted: Math.max(0, this.waveNumber - 1),

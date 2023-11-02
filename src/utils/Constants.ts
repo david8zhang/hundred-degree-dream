@@ -24,6 +24,7 @@ export class Constants {
   public static MOVE_SPEED = 300
   public static MULTIPLIER_INC_AMOUNT = 0.25
   public static NUM_WAVES_PER_INC = 4
+  public static NUM_WAVES_PER_DREAM = 6
 
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2

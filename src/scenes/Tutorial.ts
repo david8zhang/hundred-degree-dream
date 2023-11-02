@@ -40,6 +40,7 @@ export class Tutorial extends Phaser.Scene {
   public waveNumber: number = 1
   public bgImage!: Phaser.GameObjects.Image
   public isTutorial: boolean = true
+  public pressArrowKeys!: Phaser.GameObjects.Text
 
   constructor() {
     super('tutorial')
@@ -64,6 +65,21 @@ export class Tutorial extends Phaser.Scene {
     this.cpu = new TutorialCPU(this as unknown as Dream, {
       onMoveCompleted: () => this.onMoveCompleted(),
     })
+
+    const jambo = this.player.party[0]
+    this.pressArrowKeys = this.add
+      .text(
+        jambo.sprite.x,
+        jambo.sprite.y + jambo.sprite.displayHeight / 2 + 30,
+        'Tip #2. Use Arrow Keys to navigate menus, and escape to go back',
+        {
+          fontSize: '20px',
+          color: 'black',
+        }
+      )
+      .setVisible(false)
+      .setWordWrapWidth(250)
+      .setOrigin(0.5, 0.5)
 
     this.tutorialText = this.add
       .text(30, Constants.WINDOW_HEIGHT - 60, '', {
@@ -155,6 +171,7 @@ export class Tutorial extends Phaser.Scene {
   }
 
   handleRoundOver() {
+    this.pressArrowKeys.setVisible(false)
     this.goToNextScene()
   }
 }

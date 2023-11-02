@@ -24,15 +24,35 @@ export class TutorialOverworld extends TutorialScene {
   }
 
   public start(): void {
-    this.tutorial.bgImage.setTexture('overworld')
-    this.tutorial.tutorialText.setColor('black')
-    this.tutorial.continueButtonText.setColor('black')
     this.tutorial.cameras.main.setBackgroundColor(0x000000)
-    this.tutorial.player.setVisible(false)
-    this.tutorial.cpu.setVisible(false)
-    const tutorialTextLine = TutorialOverworld.TEXT_LINES[this.tutorialTextIndex]
-    this.tutorial.tutorialText.setText(tutorialTextLine)
-    this.tutorial.continueButtonText.setVisible(true)
+    this.tutorial.cpu.enemies[0].healthText.setVisible(false)
+    this.tutorial.cpu.enemies[0].healthbar.setVisible(false)
+    this.tutorial.tweens.add({
+      targets: [
+        this.tutorial.bgImage,
+        this.tutorial.player.party[0].sprite,
+        this.tutorial.cpu.enemies[0].sprite,
+        this.tutorial.tutorialText,
+      ],
+      alpha: {
+        from: 1,
+        to: 0,
+      },
+      onComplete: () => {
+        this.tutorial.time.delayedCall(2000, () => {
+          this.tutorial.tutorialText.setAlpha(1)
+          this.tutorial.bgImage.setAlpha(1)
+          this.tutorial.bgImage.setTexture('overworld')
+          this.tutorial.tutorialText.setColor('black')
+          this.tutorial.continueButtonText.setColor('black')
+          this.tutorial.player.setVisible(false)
+          this.tutorial.cpu.setVisible(false)
+          const tutorialTextLine = TutorialOverworld.TEXT_LINES[this.tutorialTextIndex]
+          this.tutorial.tutorialText.setText(tutorialTextLine)
+          this.tutorial.continueButtonText.setVisible(true)
+        })
+      },
+    })
   }
 
   onContinuePressed() {
