@@ -64,7 +64,7 @@ export class Start extends Phaser.Scene {
         this.scene.start('tutorial')
       },
     })
-    if (Save.getData(SaveKeys.CURR_EXP) !== undefined) {
+    if (Save.getData(SaveKeys.BOSS_HP_ARM) !== undefined) {
       this.continueButton = new Button({
         scene: this,
         x: Constants.WINDOW_WIDTH / 2,
