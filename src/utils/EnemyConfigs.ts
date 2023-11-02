@@ -80,7 +80,7 @@ export const SNAKE = {
 }
 
 export const NIGHTMARE_KING_ARM = {
-  maxHealth: 50,
+  maxHealth: 1,
   spriteTexture: 'boss-arm',
   moveNames: [MoveNames.NIGHTMARE_PUNCH],
   baseExpReward: 100,
@@ -95,7 +95,7 @@ export const NIGHTMARE_KING_ARM = {
 }
 
 export const NIGHTMARE_KING_LEG = {
-  maxHealth: 50,
+  maxHealth: 1,
   spriteTexture: 'boss-foot',
   moveNames: [MoveNames.NIGHTMARE_SLAM],
   baseExpReward: 100,
@@ -110,7 +110,7 @@ export const NIGHTMARE_KING_LEG = {
 }
 
 export const NIGHTMARE_KING_HEAD = {
-  maxHealth: 75,
+  maxHealth: 1,
   spriteTexture: 'boss-head',
   moveNames: [MoveNames.NIGHTMARE_LASER],
   baseExpReward: 150,

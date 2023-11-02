@@ -133,7 +133,7 @@ export default class Overworld extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(0x000000)
     this.overworldState = OverworldState.CHOOSING_ACTIVITY
     this.goToSleepText = this.add
-      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 2, 'Go to sleep', {
+      .text(Constants.WINDOW_WIDTH / 2, Constants.WINDOW_HEIGHT / 3, 'Go to sleep', {
         fontSize: '25px',
         color: 'black',
       })

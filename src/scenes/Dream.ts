@@ -149,7 +149,13 @@ export class Dream extends Phaser.Scene {
   }
 
   handleRoundOver() {
-    if (this.getPlayerParty().length == 0 || this.waveNumber == Constants.NUM_WAVES_PER_DREAM + 1) {
+    const enemy = this.cpu.enemies[0]
+
+    if (
+      this.getPlayerParty().length == 0 ||
+      this.waveNumber == Constants.NUM_WAVES_PER_DREAM ||
+      (enemy.isBoss && enemy.currHealth == 0)
+    ) {
       const dreamEndPayload: DreamEndPayload = {
         enemiesDefeated: this.enemiesDefeated,
         wavesCompleted: Math.max(0, this.waveNumber - 1),

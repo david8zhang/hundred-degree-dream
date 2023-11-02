@@ -141,7 +141,7 @@ export class DreamEnd extends Phaser.Scene {
     this.expBar.setVisible(true)
     this.currLevelText.setText(`Lv. ${currLevel}`).setVisible(true)
     this.nextLevelText.setText(`Lv. ${currLevel + 1}`).setVisible(true)
-    const didLevelUp = currExpLevel + this.totalExpGained > 100
+    const didLevelUp = currExpLevel + this.totalExpGained >= 100
     const newLevel = currLevel + Math.floor((currExpLevel + this.totalExpGained) / 100)
 
     const expGainPerInc = 1
@@ -151,9 +151,10 @@ export class DreamEnd extends Phaser.Scene {
       repeat: Math.max(numRepeats - 1, 0),
       callback: () => {
         this.expBar.setCurrValue(this.expBar.currValue + expGainPerInc)
-        if (this.expBar.currValue >= 100) {
+        if (this.expBar.currValue == 100) {
           currLevel++
-          this.expBar.currValue = this.expBar.currValue - 100
+          this.expBar.currValue = 0
+          this.expBar.setCurrValue(0)
           this.currLevelText.setText(`Lv. ${currLevel}`)
           this.nextLevelText.setText(`Lv. ${currLevel + 1}`)
         }

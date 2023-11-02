@@ -29,6 +29,8 @@ export class Constants {
   public static RIGHTMOST_PLAYER_X_POS = Constants.WINDOW_WIDTH / 3
   public static LEFTMOST_CPU_X_POS = Constants.RIGHTMOST_PLAYER_X_POS * 2
 
+  public static FONT_TITLE = 'starshines'
+
   public static BOSS_HIT_BOX = {
     x: Constants.WINDOW_WIDTH - 100,
     y: Constants.WINDOW_HEIGHT / 2 - 100,

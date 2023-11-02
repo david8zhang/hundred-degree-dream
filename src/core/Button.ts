@@ -35,6 +35,11 @@ export class Button {
       fontSize: config.fontSize ? config.fontSize : '10px',
       color: config.textColor ? config.textColor : 'black',
     })
+
+    if (config.fontFamily) {
+      this.text.setFontFamily(config.fontFamily)
+    }
+
     this.text.setPosition(
       this.text.x - this.text.displayWidth / 2,
       this.text.y - this.text.displayHeight / 2

@@ -32,6 +32,9 @@ export class Preload extends Phaser.Scene {
     this.load.image('nature-channel', 'tv/nature-channel.png')
     this.load.image('sports-channel', 'tv/sports-channel.png')
     this.load.image('overworld', 'overworld.png')
+    this.load.image('splash', 'intro-cutscene/splash.png')
+    this.load.image('intro-1', 'intro-cutscene/intro-1.png')
+    this.load.image('intro-2', 'intro-cutscene/intro-2.png')
 
     // Enemies
     this.load.image('basketball-enemy', 'enemies/basketball-enemy.png')
