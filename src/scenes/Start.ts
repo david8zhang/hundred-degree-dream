@@ -61,7 +61,7 @@ export class Start extends Phaser.Scene {
       fontSize: '20px',
       onClick: () => {
         this.createNewSave()
-        this.scene.start('tutorial')
+        this.scene.start('intro')
       },
     })
     if (Save.getData(SaveKeys.BOSS_HP_ARM) !== undefined) {
